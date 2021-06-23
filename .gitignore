@@ -127,3 +127,14 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# VS Code
+.vscode/
+
+# Database
+data.db
+data.db-shm
+data.db-wal
+
+# Configs
+config.ini

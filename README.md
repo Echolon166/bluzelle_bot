@@ -25,4 +25,4 @@ Enter your secret token into 'configs/config.ini'
 `py -3 bot/main.py`
 
 If you run into a Privileged Intents Error, the bot must have the following options enabled:
-![Privileged Intents Enabled](docs/PrivilegedIntents.PNG)
+![Privileged Intents Enabled](docs/PrivilegedIntents.png)

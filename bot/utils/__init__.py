@@ -51,7 +51,9 @@ async def pretty_print(
                 field["inline"] = True
 
             embed.add_field(
-                name=field["name"], value=field["value"], inline=field["inline"]
+                name=field["name"],
+                value=field["value"] if field["value"] else "\u200b",
+                inline=field["inline"],
             )
     elif type(fields) == str:
         embed.add_field(name="-------------", value=fields)

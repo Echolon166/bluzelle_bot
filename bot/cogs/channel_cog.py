@@ -1,6 +1,5 @@
 import sys
 import traceback
-from typing import Optional
 
 from discord.ext import commands
 
@@ -8,7 +7,7 @@ import errors
 from utils.converters import CryptoCoin
 from utils import pretty_print
 from constants import *
-from apis import coingecko_api
+from apis import bluzelle_api, coingecko_api
 
 
 class ChannelCommands(commands.Cog):
@@ -105,6 +104,110 @@ class ChannelCommands(commands.Cog):
                 },
             ],
             title=f"{coin['symbol']} Price Statistics",
+            footer=self._requested_by_footer(ctx),
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="validators",
+        help="Get the list of all active validators",
+    )
+    async def validators(self, ctx):
+        validators = bluzelle_api.get_validators()
+        if validators is None:
+            raise errors.RequestError(
+                "There was an error while fetching the validators"
+            )
+
+        validator_fields = []
+        for validator in validators:
+            validator_fields.append(
+                {
+                    "name": "Moniker",
+                    "value": validator["moniker"],
+                },
+            )
+            validator_fields.append(
+                {
+                    "name": "Address",
+                    "value": validator["address"],
+                },
+            )
+            validator_fields.append(
+                {
+                    "name": "Voting Power",
+                    "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                },
+            )
+
+        await pretty_print(
+            ctx,
+            validator_fields,
+            title="Validators",
+            footer=self._requested_by_footer(ctx),
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="validator",
+        help="Get the info of given validator",
+    )
+    async def validator(self, ctx, address: str):
+        validator = bluzelle_api.get_validator(address)
+        if validator is None:
+            raise errors.RequestError("There was an error while fetching the validator")
+
+        await pretty_print(
+            ctx,
+            [
+                {
+                    "name": "Identity",
+                    "value": validator["identity"],
+                    "inline": False,
+                },
+                {
+                    "name": "Website",
+                    "value": validator["website"],
+                    "inline": False,
+                },
+                {
+                    "name": "Security Contact",
+                    "value": validator["security_contact"],
+                    "inline": False,
+                },
+                {
+                    "name": "Details",
+                    "value": validator["details"],
+                    "inline": False,
+                },
+                {
+                    "name": "Voting Power",
+                    "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                },
+                {
+                    "name": "Tokens",
+                    "value": validator["tokens"],
+                },
+                {
+                    "name": "Delegator Shares",
+                    "value": validator["delegator_shares"],
+                },
+                {
+                    "name": "Commission Rate",
+                    "value": validator["commission_rate"],
+                },
+                {
+                    "name": "Max Rate",
+                    "value": validator["max_rate"],
+                },
+                {
+                    "name": "Max Change Rate,",
+                    "value": validator["max_change_rate"],
+                },
+            ],
+            title=f"Info of '{validator['moniker']}'",
             footer=self._requested_by_footer(ctx),
             timestamp=True,
             color=WHITE_COLOR,

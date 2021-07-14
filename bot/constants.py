@@ -17,6 +17,10 @@ DESCRIPTION_KEY = "description"
     URL constants
 """
 COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
+BLUZELLE_PRIVATE_TESTNET_URL = "https://client.sentry.testnet.private.bluzelle.com"
+
+BLUZELLE_RPC_PORT = "26657"
+BLUZELLE_API_PORT = "1317"
 
 """
     Miscellaneous constants

@@ -130,7 +130,7 @@ class ChannelCommands(commands.Cog):
             )
             validator_fields.append(
                 {
-                    "name": "Address",
+                    "name": "Operator Address",
                     "value": validator["address"],
                 },
             )
@@ -162,6 +162,14 @@ class ChannelCommands(commands.Cog):
         await pretty_print(
             ctx,
             [
+                {
+                    "name": "Self-Delegate Address",
+                    "value": validator["self_delegate_address"],
+                },
+                {
+                    "name": "Self Delegation Ratio",
+                    "value": validator["self_delegation_ratio"],
+                },
                 {
                     "name": "Identity",
                     "value": validator["identity"],
@@ -208,6 +216,47 @@ class ChannelCommands(commands.Cog):
                 },
             ],
             title=f"Info of '{validator['moniker']}'",
+            footer=self._requested_by_footer(ctx),
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="delegations",
+        help="Get delegations of given validator",
+    )
+    async def delegations(self, ctx, address: str):
+        delegations = bluzelle_api.get_validator_delegations(address)
+        if delegations is None:
+            raise errors.RequestError(
+                "There was an error while fetching the delegations"
+            )
+
+        delegation_fields = []
+        for delegation in delegations:
+            delegation_fields.append(
+                {
+                    "name": "Delegator Address",
+                    "value": delegation["delegator_address"],
+                }
+            )
+            delegation_fields.append(
+                {
+                    "name": "Shares",
+                    "value": delegation["shares"],
+                }
+            )
+            delegation_fields.append(
+                {
+                    "name": "Balance",
+                    "value": delegation["balance"],
+                }
+            )
+
+        await pretty_print(
+            ctx,
+            delegation_fields,
+            title=f"Delegations of {address}",
             footer=self._requested_by_footer(ctx),
             timestamp=True,
             color=WHITE_COLOR,

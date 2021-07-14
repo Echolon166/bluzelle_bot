@@ -14,6 +14,8 @@ attrs==21.2.0
     # via aiohttp
 banal==1.0.6
     # via dataset
+bech32==1.2.0
+    # via -r requirements.in
 certifi==2021.5.30
     # via requests
 chardet==4.0.0

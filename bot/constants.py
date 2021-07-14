@@ -14,8 +14,14 @@ NAME_KEY = "name"
 DESCRIPTION_KEY = "description"
 
 """
+    URL constants
+"""
+COINGECKO_API_URL = "https://api.coingecko.com/api/v3"
+
+"""
     Miscellaneous constants
 """
 
 ERROR_COLOR = Color(0xFF0000)
 SUCCESS_COLOR = Color(0x0000FF)
+WHITE_COLOR = Color(0xFFFFFE)

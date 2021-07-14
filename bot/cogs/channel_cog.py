@@ -1,9 +1,14 @@
 import sys
 import traceback
+from typing import Optional
 
 from discord.ext import commands
 
 import errors
+from utils.converters import CryptoCoin
+from utils import pretty_print
+from constants import *
+from apis import coingecko_api
 
 
 class ChannelCommands(commands.Cog):
@@ -36,3 +41,82 @@ class ChannelCommands(commands.Cog):
             error.__traceback__,
             file=sys.stderr,
         )
+
+    @commands.command(
+        name="price",
+        help="Get the price of a crypto coin",
+    )
+    async def crypto_price(
+        self,
+        ctx,
+        coin: CryptoCoin = {
+            "symbol": "BLZ",
+            "data": coingecko_api.get_price_data("BLZ"),
+        },
+    ):
+        if coin["data"] is None:
+            raise errors.RequestError("There was an error while fetching the coin data")
+
+        data = coin["data"]
+
+        price_change_perc_24h = data["price_change_percentage_24h"]
+        price_change_perc_7d = data["price_change_percentage_7d"]
+        price_change_perc_30d = data["price_change_percentage_30d"]
+
+        # Add + in front of the positive percentages to show green color (- comes from api itself for negatives)
+        if price_change_perc_24h >= 0:
+            price_change_perc_24h = "+" + str(price_change_perc_24h)
+        if price_change_perc_7d >= 0:
+            price_change_perc_7d = "+" + str(price_change_perc_7d)
+        if price_change_perc_30d >= 0:
+            price_change_perc_30d = "+" + str(price_change_perc_30d)
+
+        await pretty_print(
+            ctx,
+            [
+                {
+                    "name": "Current Price",
+                    "value": f"```diff\n${data['current_price']}```",
+                    "inline": False,
+                },
+                {
+                    "name": "24h Price Change",
+                    "value": f"```diff\n{price_change_perc_24h}%\n```",
+                },
+                {
+                    "name": "7d Price Change",
+                    "value": f"```diff\n{price_change_perc_7d}%```",
+                },
+                {
+                    "name": "30d Price Change",
+                    "value": f"```diff\n{price_change_perc_30d}%```",
+                },
+                {
+                    "name": "24h Low",
+                    "value": f"```diff\n{data['low_24h']}```",
+                },
+                {
+                    "name": "24h High",
+                    "value": f"```diff\n{data['high_24h']}```",
+                },
+                {
+                    "name": "Market Cap Rank",
+                    "value": f"```diff\n{data['market_cap_rank']}```",
+                },
+            ],
+            title=f"{coin['symbol']} Price Statistics",
+            footer=self._requested_by_footer(ctx),
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    def _requested_by_footer(self, ctx):
+        # Return empty dict if in private message
+        if ctx.guild is None:
+            return {}
+
+        # Return requested by author message and author avatar url if in guild
+        return {
+            "text": f"Requested by {ctx.author.name}",
+            "icon_url": ctx.author.avatar_url,
+        }

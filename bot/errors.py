@@ -5,6 +5,18 @@ from constants import *
 from utils import pretty_print
 
 
+class InvalidArgument(commands.CommandError):
+    def __init__(self, message, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.message = message
+
+
+class RequestError(commands.CommandError):
+    def __init__(self, message, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.message = message
+
+
 def standart_error_handler(error_function):
     """
     Decorator that is prepended to a cog_command_error.
@@ -115,6 +127,24 @@ def standart_error_handler(error_function):
             await pretty_print(
                 ctx,
                 "Missing required arguments.",
+                title="Error",
+                color=ERROR_COLOR,
+            )
+            return
+
+        elif isinstance(error, InvalidArgument):
+            await pretty_print(
+                ctx,
+                error.message + extra,
+                title="Error",
+                color=ERROR_COLOR,
+            )
+            return
+
+        elif isinstance(error, RequestError):
+            await pretty_print(
+                ctx,
+                error.message + extra,
                 title="Error",
                 color=ERROR_COLOR,
             )

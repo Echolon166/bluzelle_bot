@@ -36,9 +36,11 @@ def get_validators():
 
     validators = result.json()["validators"]
 
-    total_voting_power = 0
-    for validator in validators:
-        total_voting_power += int(validator["tokens"]) / 1000000
+    pooled_tokens = get_pooled_tokens()
+    if pooled_tokens["bonded_tokens"] is None:
+        return None
+
+    total_voting_power = int(pooled_tokens["bonded_tokens"]) / 1000000
 
     validator_list = []
     for validator in validators:
@@ -67,38 +69,43 @@ def get_validator(address):
             moniker, identity, website, security_contact, details, tokens, delegator_shares, voting_power, voting_power_percentage, commission_rate, max_rate, max_change_rate
     """
 
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&jailed=false&pagination.limit=100&pagination.count_total=true"
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators/{address}"
     result = requests.get(url)
     if result.status_code != 200:
         returnReqError(url, result)
         return None
 
-    validators = result.json()["validators"]
+    validator = result.json()["validator"]
 
-    validator_info = None
-    total_voting_power = 0
-    for validator in validators:
-        validator_voting_power = int(int(validator["tokens"]) / 1000000)
-        total_voting_power += validator_voting_power
+    pooled_tokens = get_pooled_tokens()
+    if pooled_tokens["bonded_tokens"] is None:
+        return None
 
-        if validator["operator_address"] == address:
-            validator_info = {
-                "moniker": validator["description"]["moniker"],
-                "identity": validator["description"]["identity"],
-                "website": validator["description"]["website"],
-                "security_contact": validator["description"]["security_contact"],
-                "details": validator["description"]["details"],
-                "tokens": validator["tokens"],
-                "delegator_shares": f"{int(float(validator['delegator_shares']))}",
-                "voting_power": validator_voting_power,
-                "commission_rate": f"{int(float(validator['commission']['commission_rates']['rate']) * 100)}%",
-                "max_rate": f"{int(float(validator['commission']['commission_rates']['max_rate']) * 100)}%",
-                "max_change_rate": f"{int(float(validator['commission']['commission_rates']['max_change_rate']) * 100)}%",
-            }
+    total_voting_power = int(pooled_tokens["bonded_tokens"]) / 1000000
+    voting_power = int(int(validator["tokens"]) / 1000000)
 
-    if validator_info is not None:
-        validator_info[
-            "voting_power_percentage"
-        ] = f"{100 / total_voting_power * int(validator_info['voting_power'])}%"
+    return {
+        "moniker": validator["description"]["moniker"],
+        "identity": validator["description"]["identity"],
+        "website": validator["description"]["website"],
+        "security_contact": validator["description"]["security_contact"],
+        "details": validator["description"]["details"],
+        "tokens": validator["tokens"],
+        "delegator_shares": f"{int(float(validator['delegator_shares']))}",
+        "voting_power": voting_power,
+        "voting_power_percentage": f"{100 / total_voting_power * voting_power}%",
+        "commission_rate": f"{int(float(validator['commission']['commission_rates']['rate']) * 100)}%",
+        "max_rate": f"{int(float(validator['commission']['commission_rates']['max_rate']) * 100)}%",
+        "max_change_rate": f"{int(float(validator['commission']['commission_rates']['max_change_rate']) * 100)}%",
+    }
 
-    return validator_info
+
+def get_pooled_tokens():
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/pool"
+
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    return result.json()["pool"]

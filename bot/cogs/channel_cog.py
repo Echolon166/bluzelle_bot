@@ -120,8 +120,21 @@ class ChannelCommands(commands.Cog):
                 "There was an error while fetching the validators"
             )
 
+        active_validators = [
+            d
+            for d in validators
+            if d["jailed"] == False and d["status"] == "BOND_STATUS_BONDED"
+        ]
+
         validator_fields = []
-        for validator in validators:
+        validator_fields.append(
+            {
+                "name": "Active Validators",
+                "value": f"{len(active_validators)} out of {len(validators)} validators",
+                "inline": False,
+            },
+        )
+        for validator in active_validators:
             validator_fields.append(
                 {
                     "name": "Moniker",

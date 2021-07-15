@@ -27,10 +27,10 @@ def get_validators():
 
     Returns:
         List[dict]: A list of dicts which consists of following keys:
-            moniker, address, voting_power, voting_power_percentage
+            moniker, address, jailed, status, voting_power, voting_power_percentage
     """
 
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators?status=BOND_STATUS_BONDED&jailed=false&pagination.limit=100&pagination.count_total=true"
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators"
     result = requests.get(url)
     if result.status_code != 200:
         returnReqError(url, result)
@@ -52,6 +52,8 @@ def get_validators():
             {
                 "moniker": validator["description"]["moniker"],
                 "address": validator["operator_address"],
+                "jailed": validator["jailed"],
+                "status": validator["status"],
                 "voting_power": validator_voting_power,
                 "voting_power_percentage": f"{100 / total_voting_power * validator_voting_power}%",
             }

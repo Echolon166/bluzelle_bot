@@ -5,7 +5,7 @@ from discord.ext import commands
 
 import errors
 from utils.converters import CryptoCoin
-from utils import pretty_print
+from utils import pretty_print, requested_by_footer
 from constants import *
 from apis import bluzelle_api, coingecko_api
 
@@ -45,12 +45,12 @@ class ChannelCommands(commands.Cog):
         name="price",
         help="Get the price of a crypto coin",
     )
-    async def crypto_price(
+    async def price(
         self,
         ctx,
         coin: CryptoCoin = {
-            "symbol": "BLZ",
-            "data": coingecko_api.get_price_data("BLZ"),
+            "symbol": BLZ_SYMBOL,
+            "data": coingecko_api.get_price_data(BLZ_SYMBOL),
         },
     ):
         if coin["data"] is None:
@@ -104,7 +104,9 @@ class ChannelCommands(commands.Cog):
                 },
             ],
             title=f"{coin['symbol']} Price Statistics",
-            footer=self._requested_by_footer(ctx),
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
             timestamp=True,
             color=WHITE_COLOR,
         )
@@ -135,30 +137,30 @@ class ChannelCommands(commands.Cog):
             },
         )
         for validator in active_validators:
-            validator_fields.append(
-                {
-                    "name": "Moniker",
-                    "value": validator["moniker"],
-                },
-            )
-            validator_fields.append(
-                {
-                    "name": "Operator Address",
-                    "value": validator["address"],
-                },
-            )
-            validator_fields.append(
-                {
-                    "name": "Voting Power",
-                    "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
-                },
+            validator_fields.extend(
+                [
+                    {
+                        "name": "Moniker",
+                        "value": validator["moniker"],
+                    },
+                    {
+                        "name": "Operator Address",
+                        "value": validator["address"],
+                    },
+                    {
+                        "name": "Voting Power",
+                        "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                    },
+                ]
             )
 
         await pretty_print(
             ctx,
             validator_fields,
             title="Validators",
-            footer=self._requested_by_footer(ctx),
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
             timestamp=True,
             color=WHITE_COLOR,
         )
@@ -229,7 +231,9 @@ class ChannelCommands(commands.Cog):
                 },
             ],
             title=f"Info of '{validator['moniker']}'",
-            footer=self._requested_by_footer(ctx),
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
             timestamp=True,
             color=WHITE_COLOR,
         )
@@ -247,41 +251,30 @@ class ChannelCommands(commands.Cog):
 
         delegation_fields = []
         for delegation in delegations:
-            delegation_fields.append(
-                {
-                    "name": "Delegator Address",
-                    "value": delegation["delegator_address"],
-                }
-            )
-            delegation_fields.append(
-                {
-                    "name": "Shares",
-                    "value": delegation["shares"],
-                }
-            )
-            delegation_fields.append(
-                {
-                    "name": "Balance",
-                    "value": delegation["balance"],
-                }
+            delegation_fields.extend(
+                [
+                    {
+                        "name": "Delegator Address",
+                        "value": delegation["delegator_address"],
+                    },
+                    {
+                        "name": "Shares",
+                        "value": delegation["shares"],
+                    },
+                    {
+                        "name": "Balance",
+                        "value": delegation["balance"],
+                    },
+                ]
             )
 
         await pretty_print(
             ctx,
             delegation_fields,
             title=f"Delegations of {address}",
-            footer=self._requested_by_footer(ctx),
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
             timestamp=True,
             color=WHITE_COLOR,
         )
-
-    def _requested_by_footer(self, ctx):
-        # Return empty dict if in private message
-        if ctx.guild is None:
-            return {}
-
-        # Return requested by author message and author avatar url if in guild
-        return {
-            "text": f"Requested by {ctx.author.name}",
-            "icon_url": ctx.author.avatar_url,
-        }

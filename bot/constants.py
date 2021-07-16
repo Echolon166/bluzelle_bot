@@ -6,6 +6,7 @@ from discord import Color
 
 CHANNEL_PREFIXES_TABLE = "channel_prefixes"
 COMMANDS_TABLE = "commands"
+TASKS_TABLE = "tasks"
 
 GUILD_ID_KEY = "guildId"
 PREFIX_KEY = "prefix"
@@ -29,3 +30,8 @@ BLUZELLE_API_PORT = "1317"
 ERROR_COLOR = Color(0xFF0000)
 SUCCESS_COLOR = Color(0x0000FF)
 WHITE_COLOR = Color(0xFFFFFE)
+
+BLZ_UBNT_RATIO = 1000000
+BLZ_SYMBOL = "BLZ"
+
+RUN_TASKS_INTERVAL = 1

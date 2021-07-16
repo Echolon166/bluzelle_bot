@@ -42,11 +42,11 @@ def get_validators():
     if pooled_tokens["bonded_tokens"] is None:
         return None
 
-    total_voting_power = int(pooled_tokens["bonded_tokens"]) / 1000000
+    total_voting_power = int(pooled_tokens["bonded_tokens"]) / BLZ_UBNT_RATIO
 
     validator_list = []
     for validator in validators:
-        validator_voting_power = int(int(validator["tokens"]) / 1000000)
+        validator_voting_power = int(int(validator["tokens"]) / BLZ_UBNT_RATIO)
 
         validator_list.append(
             {
@@ -91,8 +91,8 @@ def get_validator(address):
     if self_delegation is None:
         return None
 
-    total_voting_power = int(pooled_tokens["bonded_tokens"]) / 1000000
-    voting_power = int(int(validator["tokens"]) / 1000000)
+    total_voting_power = int(pooled_tokens["bonded_tokens"]) / BLZ_UBNT_RATIO
+    voting_power = int(int(validator["tokens"]) / BLZ_UBNT_RATIO)
 
     return {
         "moniker": validator["description"]["moniker"],
@@ -158,7 +158,7 @@ def get_validator_delegations(operator_address):
             {
                 "delegator_address": delegation["delegation"]["delegator_address"],
                 "shares": int(float(delegation["delegation"]["shares"])),
-                "balance": f"{int(delegation['balance']['amount']) / 1000000} BLZ",
+                "balance": f"{int(delegation['balance']['amount']) / BLZ_UBNT_RATIO} {BLZ_SYMBOL}",
             }
         )
 

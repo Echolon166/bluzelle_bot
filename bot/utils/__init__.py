@@ -1,4 +1,5 @@
 from discord import Embed, Color
+import datetime
 
 from utils.ext import *
 
@@ -37,7 +38,7 @@ async def pretty_print(
         embed = Embed(
             title=title,
             color=color,
-            timestamp=ctx.message.created_at,
+            timestamp=datetime.datetime.utcnow(),
         )
     else:
         embed = Embed(
@@ -74,3 +75,15 @@ async def pretty_print(
         message = await ctx.send(embed=embed)
 
     return message
+
+
+def requested_by_footer(ctx):
+    # Return empty dict if in private message
+    if ctx.guild is None:
+        return {}
+
+    # Return requested by author message and author avatar url if in guild
+    return {
+        "text": f"Requested by {ctx.author.name}",
+        "icon_url": ctx.author.avatar_url,
+    }

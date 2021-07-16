@@ -43,7 +43,7 @@ class ChannelCommands(commands.Cog):
 
     @commands.command(
         name="price",
-        help="Get the price of a crypto coin",
+        help="Get the price of a crypto coin (Default: BLZ)",
     )
     async def price(
         self,
@@ -170,7 +170,7 @@ class ChannelCommands(commands.Cog):
         help="Get the info of given validator",
     )
     async def validator(self, ctx, address: str):
-        validator = bluzelle_api.get_validator(address)
+        validator = bluzelle_api.get_validator_by_address(address)
         if validator is None:
             raise errors.RequestError("There was an error while fetching the validator")
 
@@ -184,6 +184,10 @@ class ChannelCommands(commands.Cog):
                 {
                     "name": "Self Delegation Ratio",
                     "value": validator["self_delegation_ratio"],
+                },
+                {
+                    "name": "Proposer Priority",
+                    "value": validator["proposer_priority"],
                 },
                 {
                     "name": "Identity",
@@ -272,6 +276,50 @@ class ChannelCommands(commands.Cog):
             ctx,
             delegation_fields,
             title=f"Delegations of {address}",
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="block",
+        help="Get a block at a certain height (Default: Latest)",
+    )
+    async def block(self, ctx, height: str = "latest"):
+        block = bluzelle_api.get_block(height)
+        if block is None:
+            raise errors.RequestError("There was an error while fetching the block")
+
+        await pretty_print(
+            ctx,
+            [
+                {
+                    "name": "Time (UTC)",
+                    "value": block["time"],
+                    "inline": False,
+                },
+                {
+                    "name": "# Hash",
+                    "value": block["hash"],
+                    "inline": False,
+                },
+                {
+                    "name": "No. of Txs",
+                    "value": str(block["number_of_transactions"]),
+                    "inline": False,
+                },
+                {
+                    "name": "Proposer Moniker",
+                    "value": block["proposer"]["moniker"],
+                },
+                {
+                    "name": "Proposer Address",
+                    "value": block["proposer"]["address"],
+                },
+            ],
+            title=f"Block {block['height']}",
             footer=requested_by_footer(ctx)
             if isinstance(ctx, commands.context.Context)
             else {},

@@ -1,4 +1,5 @@
 import requests
+import datetime
 from bech32 import bech32_decode, bech32_encode
 
 from constants import *
@@ -23,11 +24,11 @@ def returnReqError(url, result):
 
 
 def get_validators():
-    """Get the list of all active validators
+    """Get the list of all validators
 
     Returns:
         List[dict]: A list of dicts which consists of following keys:
-            moniker, address, jailed, status, voting_power, voting_power_percentage
+            moniker, address, pub_key, jailed, status, voting_power, voting_power_percentage
     """
 
     url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators"
@@ -38,6 +39,7 @@ def get_validators():
 
     validators = result.json()["validators"]
 
+    # Get total pooled bonded tokens
     pooled_tokens = get_pooled_tokens()
     if pooled_tokens["bonded_tokens"] is None:
         return None
@@ -52,6 +54,7 @@ def get_validators():
             {
                 "moniker": validator["description"]["moniker"],
                 "address": validator["operator_address"],
+                "pub_key": validator["consensus_pubkey"]["key"],
                 "jailed": validator["jailed"],
                 "status": validator["status"],
                 "voting_power": validator_voting_power,
@@ -62,7 +65,7 @@ def get_validators():
     return validator_list
 
 
-def get_validator(address):
+def get_validator_by_address(address):
     """Get the validator info of given operator address
 
     Args:
@@ -70,7 +73,8 @@ def get_validator(address):
 
     Returns:
         dict: A dict which consists of following keys:
-            moniker, identity, website, security_contact, details, tokens, delegator_shares, self_delegate_address, self_delegation_ratio, voting_power, voting_power_percentage, commission_rate, max_rate, max_change_rate
+            moniker, identity, website, security_contact, details, tokens, delegator_shares, self_delegate_address, self_delegation_ratio,
+            proposer_priority, voting_power, voting_power_percentage, commission_rate, max_rate, max_change_rate
     """
 
     url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators/{address}"
@@ -81,15 +85,26 @@ def get_validator(address):
 
     validator = result.json()["validator"]
 
+    # Get total pooled bonded tokens
     pooled_tokens = get_pooled_tokens()
     if pooled_tokens["bonded_tokens"] is None:
         return None
 
+    # Get self delegation info
     self_delegate_address = get_delegate_from_operator(address)
-
     self_delegation = get_validator_self_delegation(address, self_delegate_address)
     if self_delegation is None:
         return None
+
+    # Get validator infos from rpc to get proposer priority
+    validator_infos = get_rpc_validator_info()
+    if validator_infos is None:
+        return None
+
+    for validator_info in validator_infos:
+        if validator_info["pub_key"] == validator["consensus_pubkey"]["key"]:
+            proposer_priority = validator_info["proposer_priority"]
+            break
 
     total_voting_power = int(pooled_tokens["bonded_tokens"]) / BLZ_UBNT_RATIO
     voting_power = int(int(validator["tokens"]) / BLZ_UBNT_RATIO)
@@ -104,12 +119,34 @@ def get_validator(address):
         "delegator_shares": f"{int(float(validator['delegator_shares']))}",
         "self_delegate_address": self_delegate_address,
         "self_delegation_ratio": f"{int(float(validator['delegator_shares']) / float(self_delegation['delegation']['shares']) * 100)}%",
+        "proposer_priority": proposer_priority,
         "voting_power": voting_power,
         "voting_power_percentage": f"{100 / total_voting_power * voting_power}%",
         "commission_rate": f"{int(float(validator['commission']['commission_rates']['rate']) * 100)}%",
         "max_rate": f"{int(float(validator['commission']['commission_rates']['max_rate']) * 100)}%",
         "max_change_rate": f"{int(float(validator['commission']['commission_rates']['max_change_rate']) * 100)}%",
     }
+
+
+def get_validator_by_pub_key(pub_key):
+    """Get validator with matching pub_key
+
+    Args:
+        pub_key (str): Public key of validator
+
+    Returns:
+        dict: A list of dicts which consists of following keys:
+            moniker, address, pub_key, jailed, status, voting_power, voting_power_percentage
+    """
+
+    validators = get_validators()
+    if validators is None:
+        return None
+
+    for validator in validators:
+        if validator["pub_key"] == pub_key:
+            return validator
+    return None
 
 
 def get_validator_self_delegation(operator_address, self_delegate_address):
@@ -196,3 +233,89 @@ def get_pooled_tokens():
         return None
 
     return result.json()["pool"]
+
+
+def get_rpc_validator_info():
+    """Get rpc info of all validators
+
+    Returns:
+        List[dict]: A list of dicts which consists of following keys:
+            address, pub_key, proposer_priority
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_RPC_PORT}/validators"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    validator_infos = result.json()["result"]["validators"]
+
+    validator_info_list = []
+    for validator_info in validator_infos:
+        validator_info_list.append(
+            {
+                "address": validator_info["address"],
+                "pub_key": validator_info["pub_key"]["value"],
+                "proposer_priority": validator_info["proposer_priority"],
+            }
+        )
+
+    return validator_info_list
+
+
+def get_block(height="latest"):
+    """Get a block at a certain height
+
+    Args:
+        height (str, optional): Height of the block. Defaults to "latest".
+
+    Returns:
+        dict: A dict which consists of following keys:
+            height, hash, proposer, proposer['moniker'], proposer['address'], number_of_transactions, time
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/blocks"
+    if height == "latest":
+        url += f"/latest"
+    else:
+        url += f"/{height}"
+
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    block = result.json()
+
+    # Get validator infos from rpc to get associated pub_key of hashed address
+    validator_infos = get_rpc_validator_info()
+    if validator_infos is None:
+        return None
+
+    for validator_info in validator_infos:
+        if validator_info["address"] == block["block"]["header"]["proposer_address"]:
+            pub_key = validator_info["pub_key"]
+            break
+
+    # Get validator wih matcing pub_key
+    validator = get_validator_by_pub_key(pub_key)
+    if validator is None:
+        return None
+
+    # Format block time
+    time = datetime.datetime.strptime(
+        block["block"]["header"]["time"][:26], "%Y-%m-%dT%H:%M:%S.%f"
+    )
+    formattedTime = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
+
+    return {
+        "height": block["block"]["header"]["height"],
+        "hash": block["block_id"]["hash"],
+        "proposer": {
+            "moniker": validator["moniker"],
+            "address": validator["address"],
+        },
+        "number_of_transactions": len(block["block"]["data"]["txs"]),
+        "time": formattedTime,
+    }

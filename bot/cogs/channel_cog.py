@@ -48,7 +48,7 @@ class ChannelCommands(commands.Cog):
 
     @commands.command(
         name="price",
-        help="Get the price of a crypto coin (Default: BLZ)",
+        help="Get the price of a crypto coin",
     )
     async def price(
         self,
@@ -173,6 +173,47 @@ class ChannelCommands(commands.Cog):
                 },
             ],
             title="Inflation",
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="community_pool",
+        help="Get community pool coins",
+    )
+    async def community_pool(self, ctx):
+        pools = economy_api.get_community_pools()
+        if pools is None:
+            raise errors.RequestError(
+                "There was an error while fetching the community pool"
+            )
+
+        pool_fields = []
+        for pool in pools:
+            pool_fields.extend(
+                [
+                    {
+                        "name": "Denom",
+                        "value": pool["denom"],
+                    },
+                    {
+                        "name": "Amount",
+                        "value": pool["amount"],
+                    },
+                    {
+                        "name": "\u200b",
+                        "value": "\u200b",
+                    },
+                ]
+            )
+
+        await pretty_print(
+            ctx,
+            pool_fields,
+            title="Community Pool",
             footer=requested_by_footer(ctx)
             if isinstance(ctx, commands.context.Context)
             else {},
@@ -354,7 +395,7 @@ class ChannelCommands(commands.Cog):
 
     @commands.command(
         name="block",
-        help="Get a block at a certain height (Default: Latest)",
+        help="Get a block at a certain height",
     )
     async def block(self, ctx, height: str = "latest"):
         block = block_api.get_block(height)

@@ -1,27 +1,9 @@
-import re
-import requests
-import datetime
 from bech32 import bech32_decode, bech32_encode
+import requests
 
+from apis import returnReqError
+from apis.bluzelle_api.economy import get_pooled_tokens
 from constants import *
-
-
-def returnReqError(url, result):
-    """Handler for the request errors.
-
-    Args:
-        url (str): URL which the request was made.
-        result (requests.models.Response): Response of the request.
-    """
-
-    print("Request error!")
-    print(f"Url: {url}")
-    print(f"Status Code: {result.status_code}")
-    try:
-        print(f"JSON result type: {type(result.json())}")
-        print(result.json())
-    except:
-        pass
 
 
 def get_validators():
@@ -93,7 +75,10 @@ def get_validator_by_address(address):
 
     # Get self delegation info
     self_delegate_address = get_delegate_from_operator(address)
-    self_delegation = get_validator_self_delegation(address, self_delegate_address)
+    self_delegation = get_validator_delegation_by_address(
+        address,
+        self_delegate_address,
+    )
     if self_delegation is None:
         return None
 
@@ -150,27 +135,6 @@ def get_validator_by_pub_key(pub_key):
     return None
 
 
-def get_validator_self_delegation(operator_address, self_delegate_address):
-    """Get self delegation of given validator
-
-    Args:
-        operator_address (str): Operator address of validator
-        self_delegate_address (str): Self delegate address of validator
-
-    Returns:
-        dict: A dict which consists of following keys:
-            delegation, delegation['delegator_address'], delegation['validator_address'], delegation['shares'], balance, balance['denom'], balance['amount']
-    """
-
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators/{operator_address}/delegations/{self_delegate_address}"
-    result = requests.get(url)
-    if result.status_code != 200:
-        returnReqError(url, result)
-        return None
-
-    return result.json()["delegation_response"]
-
-
 def get_validator_delegations(operator_address):
     """Get delegations of given validator
 
@@ -203,6 +167,27 @@ def get_validator_delegations(operator_address):
     return delegation_list
 
 
+def get_validator_delegation_by_address(operator_address, delegator_address):
+    """Get delegation of given validator by address
+
+    Args:
+        operator_address (str): Operator address of validator
+        delegator_address (str): Address of delegator
+
+    Returns:
+        dict: A dict which consists of following keys:
+            delegation, delegation['delegator_address'], delegation['validator_address'], delegation['shares'], balance, balance['denom'], balance['amount']
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators/{operator_address}/delegations/{delegator_address}"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    return result.json()["delegation_response"]
+
+
 def get_delegate_from_operator(operator_address):
     """Get self-delegate address from operator address
 
@@ -216,24 +201,6 @@ def get_delegate_from_operator(operator_address):
     address = bech32_decode(operator_address)
 
     return bech32_encode("bluzelle", address[1])
-
-
-def get_pooled_tokens():
-    """Get total number of pooled tokens
-
-    Returns:
-        dict: A dict which consists of following keys:
-            not_bonded_tokens, bonded_tokens
-    """
-
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/pool"
-
-    result = requests.get(url)
-    if result.status_code != 200:
-        returnReqError(url, result)
-        return None
-
-    return result.json()["pool"]
 
 
 def get_rpc_validator_info():
@@ -263,112 +230,3 @@ def get_rpc_validator_info():
         )
 
     return validator_info_list
-
-
-def get_block(height="latest"):
-    """Get a block at a certain height
-
-    Args:
-        height (str, optional): Height of the block. Defaults to "latest".
-
-    Returns:
-        dict: A dict which consists of following keys:
-            height, hash, proposer, proposer['moniker'], proposer['address'], number_of_transactions, time
-    """
-
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/blocks"
-    if height == "latest":
-        url += f"/latest"
-    else:
-        url += f"/{height}"
-
-    result = requests.get(url)
-    if result.status_code != 200:
-        returnReqError(url, result)
-        return None
-
-    block = result.json()
-
-    # Get validator infos from rpc to get associated pub_key of hashed address
-    validator_infos = get_rpc_validator_info()
-    if validator_infos is None:
-        return None
-
-    for validator_info in validator_infos:
-        if validator_info["address"] == block["block"]["header"]["proposer_address"]:
-            pub_key = validator_info["pub_key"]
-            break
-
-    # Get validator wih matcing pub_key
-    validator = get_validator_by_pub_key(pub_key)
-    if validator is None:
-        return None
-
-    # Format block time
-    time = datetime.datetime.strptime(
-        block["block"]["header"]["time"][:26], "%Y-%m-%dT%H:%M:%S.%f"
-    )
-    formattedTime = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
-
-    return {
-        "height": block["block"]["header"]["height"],
-        "hash": block["block_id"]["hash"],
-        "proposer": {
-            "moniker": validator["moniker"],
-            "address": validator["address"],
-        },
-        "number_of_transactions": len(block["block"]["data"]["txs"]),
-        "time": formattedTime,
-    }
-
-
-def get_inflation():
-    """Get inflation rate
-
-    Returns:
-        str: Inflation rate
-    """
-
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/mint/v1beta1/inflation"
-    result = requests.get(url)
-    if result.status_code != 200:
-        returnReqError(url, result)
-        return None
-
-    return result.json()["inflation"]
-
-
-def get_balances(address):
-    """Get balances of an address
-
-    Args:
-        address (str): Account address
-
-    Returns:
-        List[dict]: A list of dicts which consists of following keys:
-            denom, amount
-    """
-
-    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/bank/balances/{address}"
-    result = requests.get(url)
-    if result.status_code != 200:
-        returnReqError(url, result)
-        return None
-
-    balances = result.json()["result"]
-
-    balance_list = []
-    for balance in balances:
-        denom = balance["denom"]
-
-        amount_partition = str(float(balance["amount"]) / BLZ_UBNT_RATIO).partition(".")
-        amount_seperated = re.sub(r"(?<!^)(?=(\d{3})+$)", r",", amount_partition[0])
-
-        balance_list.append(
-            {
-                "denom": "BLZ" if denom == "ubnt" else denom,
-                "amount": f"{amount_seperated}{amount_partition[1]}{amount_partition[2]}",
-            }
-        )
-
-    return balance_list

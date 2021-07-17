@@ -7,7 +7,12 @@ import errors
 from utils.converters import CryptoCoin
 from utils import pretty_print, requested_by_footer
 from constants import *
-from apis import bluzelle_api, coingecko_api
+from apis import coingecko_api
+from apis.bluzelle_api import (
+    block as block_api,
+    economy as economy_api,
+    validator as validator_api,
+)
 
 
 class ChannelCommands(commands.Cog):
@@ -116,7 +121,7 @@ class ChannelCommands(commands.Cog):
         help="Get balance of an account",
     )
     async def balance(self, ctx, address: str):
-        balances = bluzelle_api.get_balances(address)
+        balances = economy_api.get_balances(address)
         if balances is None:
             raise errors.RequestError("There was an error while fetching the balances")
 
@@ -155,7 +160,7 @@ class ChannelCommands(commands.Cog):
         help="Get current minting inflation value",
     )
     async def inflation(self, ctx):
-        inflation = bluzelle_api.get_inflation()
+        inflation = economy_api.get_inflation()
         if inflation is None:
             raise errors.RequestError("There was an error while fetching the inflation")
 
@@ -180,7 +185,7 @@ class ChannelCommands(commands.Cog):
         help="Get the list of all active validators",
     )
     async def validators(self, ctx):
-        validators = bluzelle_api.get_validators()
+        validators = validator_api.get_validators()
         if validators is None:
             raise errors.RequestError(
                 "There was an error while fetching the validators"
@@ -234,7 +239,7 @@ class ChannelCommands(commands.Cog):
         help="Get the info of given validator",
     )
     async def validator(self, ctx, address: str):
-        validator = bluzelle_api.get_validator_by_address(address)
+        validator = validator_api.get_validator_by_address(address)
         if validator is None:
             raise errors.RequestError("There was an error while fetching the validator")
 
@@ -311,7 +316,7 @@ class ChannelCommands(commands.Cog):
         help="Get delegations of given validator",
     )
     async def delegations(self, ctx, address: str):
-        delegations = bluzelle_api.get_validator_delegations(address)
+        delegations = validator_api.get_validator_delegations(address)
         if delegations is None:
             raise errors.RequestError(
                 "There was an error while fetching the delegations"
@@ -352,7 +357,7 @@ class ChannelCommands(commands.Cog):
         help="Get a block at a certain height (Default: Latest)",
     )
     async def block(self, ctx, height: str = "latest"):
-        block = bluzelle_api.get_block(height)
+        block = block_api.get_block(height)
         if block is None:
             raise errors.RequestError("There was an error while fetching the block")
 

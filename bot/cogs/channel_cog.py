@@ -112,6 +112,70 @@ class ChannelCommands(commands.Cog):
         )
 
     @commands.command(
+        name="balance",
+        help="Get balance of an account",
+    )
+    async def balance(self, ctx, address: str):
+        balances = bluzelle_api.get_balances(address)
+        if balances is None:
+            raise errors.RequestError("There was an error while fetching the balances")
+
+        balance_fields = []
+        for balance in balances:
+            balance_fields.extend(
+                [
+                    {
+                        "name": "Denom",
+                        "value": balance["denom"],
+                    },
+                    {
+                        "name": "Amount",
+                        "value": balance["amount"],
+                    },
+                    {
+                        "name": "\u200b",
+                        "value": "\u200b",
+                    },
+                ]
+            )
+
+        await pretty_print(
+            ctx,
+            balance_fields,
+            title=f"Balances of {address}",
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
+        name="inflation",
+        help="Get current minting inflation value",
+    )
+    async def inflation(self, ctx):
+        inflation = bluzelle_api.get_inflation()
+        if inflation is None:
+            raise errors.RequestError("There was an error while fetching the inflation")
+
+        await pretty_print(
+            ctx,
+            [
+                {
+                    "name": "Current minting inflation value",
+                    "value": inflation,
+                },
+            ],
+            title="Inflation",
+            footer=requested_by_footer(ctx)
+            if isinstance(ctx, commands.context.Context)
+            else {},
+            timestamp=True,
+            color=WHITE_COLOR,
+        )
+
+    @commands.command(
         name="validators",
         help="Get the list of all active validators",
     )

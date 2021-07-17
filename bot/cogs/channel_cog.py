@@ -296,10 +296,6 @@ class ChannelCommands(commands.Cog):
                     "value": validator["self_delegation_ratio"],
                 },
                 {
-                    "name": "Proposer Priority",
-                    "value": validator["proposer_priority"],
-                },
-                {
                     "name": "Identity",
                     "value": validator["identity"],
                     "inline": False,
@@ -340,8 +336,20 @@ class ChannelCommands(commands.Cog):
                     "value": validator["max_rate"],
                 },
                 {
-                    "name": "Max Change Rate,",
+                    "name": "Max Change Rate",
                     "value": validator["max_change_rate"],
+                },
+                {
+                    "name": "Proposer Priority",
+                    "value": validator["proposer_priority"],
+                },
+                {
+                    "name": "Uptime",
+                    "value": validator["uptime"],
+                },
+                {
+                    "name": "\u200b",
+                    "value": "\u200b",
                 },
             ],
             title=f"Info of '{validator['moniker']}'",

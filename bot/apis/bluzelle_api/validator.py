@@ -57,7 +57,7 @@ def get_validator_by_address(address):
     Returns:
         dict: A dict which consists of following keys:
             moniker, identity, website, security_contact, details, tokens, delegator_shares, self_delegate_address, self_delegation_ratio,
-            proposer_priority, voting_power, voting_power_percentage, commission_rate, max_rate, max_change_rate
+            proposer_priority, voting_power, voting_power_percentage, commission_rate, max_rate, max_change_rate, uptime
     """
 
     url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/staking/v1beta1/validators/{address}"
@@ -80,6 +80,11 @@ def get_validator_by_address(address):
         self_delegate_address,
     )
     if self_delegation is None:
+        return None
+
+    # Get validator uptime
+    uptime = get_validator_uptime(validator["consensus_pubkey"]["key"])
+    if uptime is None:
         return None
 
     # Get validator infos from rpc to get proposer priority
@@ -111,6 +116,7 @@ def get_validator_by_address(address):
         "commission_rate": f"{int(float(validator['commission']['commission_rates']['rate']) * 100)}%",
         "max_rate": f"{int(float(validator['commission']['commission_rates']['max_rate']) * 100)}%",
         "max_change_rate": f"{int(float(validator['commission']['commission_rates']['max_change_rate']) * 100)}%",
+        "uptime": uptime,
     }
 
 
@@ -132,6 +138,30 @@ def get_validator_by_pub_key(pub_key):
     for validator in validators:
         if validator["pub_key"] == pub_key:
             return validator
+    return None
+
+
+def get_valcons_address_by_pub_key(pub_key):
+    """Get validator valcons address with matching pub_key
+
+    Args:
+        pub_key (str): Public key of validator
+
+    Returns:
+        str: Validator valcons address
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/validatorsets/latest"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    validators = result.json()["result"]["validators"]
+
+    for validator in validators:
+        if validator["pub_key"]["value"] == pub_key:
+            return validator["address"]
     return None
 
 
@@ -230,3 +260,45 @@ def get_rpc_validator_info():
         )
 
     return validator_info_list
+
+
+def get_validator_uptime(pub_key):
+    """Get uptime of the validator
+
+    Args:
+        pub_key (str): Public key of validator
+
+    Returns:
+        str: Uptime percentage of the validator
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/slashing/v1beta1/params"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    validator_params = result.json()["params"]
+
+    valcons_address = get_valcons_address_by_pub_key(pub_key)
+    if valcons_address is None:
+        return None
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/slashing/v1beta1/signing_infos/{valcons_address}"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    signing_info = result.json()["val_signing_info"]
+
+    uptime = int(
+        (
+            int(validator_params["signed_blocks_window"])
+            - int(signing_info["missed_blocks_counter"])
+        )
+        / int(validator_params["signed_blocks_window"])
+        * 100
+    )
+
+    return f"{uptime}%"

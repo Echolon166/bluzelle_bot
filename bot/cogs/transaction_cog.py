@@ -3,32 +3,18 @@ import traceback
 
 from discord.ext import commands
 
-import data
 import errors
-import validation
+from utils import pretty_print, requested_by_footer
 from constants import *
-from utils import pretty_print
 
 
-class Options(commands.Cog):
+class Transaction(commands.Cog):
     """
-    Bot option commands.
+    Transaction related commands.
     """
 
     def __init__(self, bot):
         self.bot = bot
-
-    async def cog_after_invoke(self, ctx):
-        """
-        A special method that is called whenever an command is successfully called inside this cog.
-        """
-        await pretty_print(
-            ctx,
-            "Command completed successfully!",
-            title="Success",
-            color=SUCCESS_COLOR,
-        )
-        pass
 
     @errors.standart_error_handler
     async def cog_command_error(self, ctx, error):
@@ -52,11 +38,3 @@ class Options(commands.Cog):
             error.__traceback__,
             file=sys.stderr,
         )
-
-    @commands.command(
-        name="set_prefix",
-        help="Prefix for bot commands",
-    )
-    @validation.owner_or_permissions(administrator=True)
-    async def set_prefix(self, ctx, prefix):
-        data.add_prefix_mapping(ctx.guild.id, prefix)

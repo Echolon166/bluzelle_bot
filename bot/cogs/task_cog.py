@@ -9,15 +9,14 @@ from discord.ext import commands, tasks
 import data
 import errors
 import validation
-from cogs import channel_cog
 from constants import *
 from utils import pretty_print, requested_by_footer
-from utils.mappings import get_mapping
+from utils.mappings import get_command_mapping, get_parameter_mapping
 
 
-class TaskCommands(commands.Cog):
+class Task(commands.Cog):
     """
-    Cog for processing task commands which are often only presented to administrators.
+    Task scheduling commands.
     """
 
     def __init__(self, bot):
@@ -67,9 +66,7 @@ class TaskCommands(commands.Cog):
                         task["interval"]
                     ):
                         # Get function object, kwargs and channel_id
-                        task_function = getattr(
-                            channel_cog.ChannelCommands, task["function"]
-                        )
+                        task_function = get_command_mapping(task["function"])
                         kwargs = task["kwargs"]
                         channel_id = task["channel_id"]
 
@@ -87,7 +84,7 @@ class TaskCommands(commands.Cog):
 
     @commands.command(
         name="add_task",
-        help="Add a new task which will be repeated per interval",
+        help="Add a task which will be repeated per interval",
     )
     @validation.owner_or_permissions(administrator=True)
     async def add_task(
@@ -102,7 +99,7 @@ class TaskCommands(commands.Cog):
         # Get the channel id
         id = "".join(c for c in channel if c.isdigit())
 
-        kwarg_mapping = get_mapping(function, kwargs)
+        kwarg_mapping = get_parameter_mapping(function, kwargs)
 
         task = {
             "channel_id": id,
@@ -113,8 +110,7 @@ class TaskCommands(commands.Cog):
         }
 
         # Call for the first time to test if there are any errors, doesn't add the task if there is any
-        # Currently, only supports commands from channel_cog.ChannelCommands
-        task_function = getattr(channel_cog.ChannelCommands, task["function"])
+        task_function = get_command_mapping(task["function"])
 
         channel_id = task["channel_id"]
         channel_obj = await self.bot.fetch_channel(channel_id)

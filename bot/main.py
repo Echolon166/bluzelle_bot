@@ -4,7 +4,14 @@ from discord.ext import commands, tasks
 import config
 import data
 from constants import *
-from cogs import channel_cog, task_cog, options_cog
+from cogs import (
+    block_cog,
+    economy_cog,
+    options_cog,
+    validator_cog,
+    transaction_cog,
+    task_cog,
+)
 
 
 config.parse_args()
@@ -31,9 +38,12 @@ class RallyRoleBot(commands.Bot):
             chunk_guilds_at_startup=True,
         )
 
-        self.add_cog(channel_cog.ChannelCommands(self))
-        self.add_cog(options_cog.OptionsCommands(self))
-        self.add_cog(task_cog.TaskCommands(self))
+        self.add_cog(economy_cog.Economy(self))
+        self.add_cog(block_cog.Block(self))
+        self.add_cog(validator_cog.Validator(self))
+        self.add_cog(task_cog.Task(self))
+        self.add_cog(options_cog.Options(self))
+        self.add_cog(transaction_cog.Transaction(self))
 
         data.delete_all_commands()
         for command in self.commands:

@@ -36,7 +36,9 @@ def get_inflation():
         returnReqError(url, result)
         return None
 
-    return result.json()["inflation"]
+    inflation = float(result.json()["inflation"])
+
+    return f"{'{:.2f}'.format(inflation)}%"
 
 
 def get_balances(address):

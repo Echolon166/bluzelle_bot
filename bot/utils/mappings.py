@@ -18,6 +18,8 @@ def get_parameter_mapping(function, kwargs):
         return validator_parameter_mapping(kwargs)
     elif function == "delegations":
         return delegations_parameter_mapping(kwargs)
+    elif function == "transaction":
+        return transaction_parameter_mapping(kwargs)
     return {}
 
 
@@ -35,6 +37,12 @@ def validator_parameter_mapping(*kwargs):
 def delegations_parameter_mapping(*kwargs):
     return {
         "address": kwargs[0][0],
+    }
+
+
+def transaction_parameter_mapping(*kwargs):
+    return {
+        "hash": kwargs[0][0],
     }
 
 
@@ -64,4 +72,6 @@ def get_command_mapping(function):
         return getattr(validator_cog.Validator, function)
     elif function == "validators":
         return getattr(validator_cog.Validator, function)
+    elif function == "transaction":
+        return getattr(transaction_cog.Transaction, function)
     return {}

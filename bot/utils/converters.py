@@ -1,19 +1,19 @@
+from bech32 import bech32_decode
 from discord.ext import commands
+
 
 import errors
 from apis import coingecko_api
 
 
 class CryptoCoin(commands.Converter):
-    """Converter to check if the given coin is valid, and if valid, return it's price data.
+    """Converter to check if the given coin is valid.
 
     Raises:
         errors.InvalidArgument: No coin exists with given symbol.
-        errors.RequestError: There was an error while fetching the data.
 
     Returns:
-        dict: A dict which consists of following keys:
-            symbol and data(price data).
+        str: Symbol of the coin
     """
 
     async def convert(self, ctx, argument):
@@ -22,9 +22,44 @@ class CryptoCoin(commands.Converter):
         if not valid:
             raise errors.InvalidArgument("Invalid coin symbol")
 
-        # Retrieve the price data of the coin
-        data = coingecko_api.get_price_data(argument)
-        if data is None:
-            raise errors.RequestError("There was an error while fetching the coin data")
+        return argument.upper()
 
-        return {"symbol": argument.upper(), "data": data}
+
+class AccountAddress(commands.Converter):
+    async def convert(self, ctx, argument):
+        expected_prefix = "bluzelle"
+
+        # Decode the address
+        address = bech32_decode(argument)
+
+        # Check if the address is valid
+        if address[0] == None or address[1] == None:
+            raise errors.InvalidArgument("Invalid address format")
+
+        # Check if the address prefix is correct
+        if address[0] != expected_prefix:
+            raise errors.InvalidArgument(
+                f"Invalid address prefix\n'{expected_prefix}' expected, '{address[0]}' found"
+            )
+
+        return argument
+
+
+class ValidatorAddress(commands.Converter):
+    async def convert(self, ctx, argument):
+        expected_prefix = "bluzellevaloper"
+
+        # Decode the address
+        address = bech32_decode(argument)
+
+        # Check if the address is valid
+        if address[0] == None or address[1] == None:
+            raise errors.InvalidArgument("Invalid address format")
+
+        # Check if the address prefix is correct
+        if address[0] != expected_prefix:
+            raise errors.InvalidArgument(
+                f"Invalid address prefix\n'{expected_prefix}' expected, '{address[0]}' found"
+            )
+
+        return argument

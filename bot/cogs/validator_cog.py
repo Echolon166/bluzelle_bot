@@ -7,6 +7,7 @@ import errors
 from utils import pretty_print, requested_by_footer
 from constants import *
 from apis.bluzelle_api import validator as validator_api
+from utils.converters import ValidatorAddress
 
 
 class Validator(commands.Cog):
@@ -98,7 +99,11 @@ class Validator(commands.Cog):
         name="validator",
         help="Get the info of given validator",
     )
-    async def validator(self, ctx, address: str):
+    async def validator(
+        self,
+        ctx,
+        address: ValidatorAddress,
+    ):
         validator = validator_api.get_validator_by_address(address)
         if validator is None:
             raise errors.RequestError("There was an error while fetching the validator")
@@ -183,7 +188,11 @@ class Validator(commands.Cog):
         name="delegations",
         help="Get delegations of given validator",
     )
-    async def delegations(self, ctx, address: str):
+    async def delegations(
+        self,
+        ctx,
+        address: ValidatorAddress,
+    ):
         delegations = validator_api.get_validator_delegations(address)
         if delegations is None:
             raise errors.RequestError(

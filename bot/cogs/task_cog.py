@@ -99,7 +99,7 @@ class Task(commands.Cog):
         # Get the channel id
         id = "".join(c for c in channel if c.isdigit())
 
-        kwarg_mapping = get_parameter_mapping(function, kwargs)
+        kwarg_mapping = await get_parameter_mapping(self, ctx, function, kwargs)
 
         task = {
             "channel_id": id,

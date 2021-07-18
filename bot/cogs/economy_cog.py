@@ -6,7 +6,7 @@ from discord.ext import commands
 import errors
 from constants import *
 from utils import pretty_print, requested_by_footer
-from utils.converters import CryptoCoin
+from utils.converters import AccountAddress, CryptoCoin
 from apis import coingecko_api
 from apis.bluzelle_api import economy as economy_api
 
@@ -49,15 +49,12 @@ class Economy(commands.Cog):
     async def price(
         self,
         ctx,
-        coin: CryptoCoin = {
-            "symbol": BLZ_SYMBOL,
-            "data": coingecko_api.get_price_data(BLZ_SYMBOL),
-        },
+        coin: CryptoCoin = BLZ_SYMBOL,
     ):
-        if coin["data"] is None:
+        # Retrieve the price data of the coin
+        data = coingecko_api.get_price_data(coin)
+        if data is None:
             raise errors.RequestError("There was an error while fetching the coin data")
-
-        data = coin["data"]
 
         price_change_perc_24h = data["price_change_percentage_24h"]
         price_change_perc_7d = data["price_change_percentage_7d"]
@@ -104,7 +101,7 @@ class Economy(commands.Cog):
                     "value": f"```diff\n{data['market_cap_rank']}```",
                 },
             ],
-            title=f"{coin['symbol']} Price Statistics",
+            title=f"{coin} Price Statistics",
             footer=requested_by_footer(ctx)
             if isinstance(ctx, commands.context.Context)
             else {},
@@ -116,7 +113,11 @@ class Economy(commands.Cog):
         name="balance",
         help="Get balance of an account",
     )
-    async def balance(self, ctx, address: str):
+    async def balance(
+        self,
+        ctx,
+        address: AccountAddress,
+    ):
         balances = economy_api.get_balances(address)
         if balances is None:
             raise errors.RequestError("There was an error while fetching the balances")

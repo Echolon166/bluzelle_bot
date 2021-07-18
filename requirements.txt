@@ -5,7 +5,9 @@
 #    pip-compile requirements.in
 #
 aiohttp==3.7.4.post0
-    # via discord.py
+    # via
+    #   discord-py-slash-command
+    #   discord.py
 alembic==1.6.5
     # via dataset
 async-timeout==3.0.1
@@ -26,8 +28,12 @@ configargparse==1.5
     # via -r requirements.in
 dataset==1.5.0
     # via -r requirements.in
-discord.py==1.7.3
+discord-py-slash-command==2.3.2
     # via -r requirements.in
+discord.py==1.7.3
+    # via
+    #   -r requirements.in
+    #   discord-py-slash-command
 greenlet==1.1.0
     # via sqlalchemy
 idna==3.2

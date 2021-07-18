@@ -1,5 +1,6 @@
 bech32
 dataset
 discord.py
+discord-py-slash-command
 ConfigArgParse
 requests

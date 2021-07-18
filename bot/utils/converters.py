@@ -4,6 +4,7 @@ from discord.ext import commands
 
 import errors
 from apis import coingecko_api
+import utils.mappings as mappings
 
 
 class CryptoCoin(commands.Converter):
@@ -26,6 +27,15 @@ class CryptoCoin(commands.Converter):
 
 
 class AccountAddress(commands.Converter):
+    """Converter to check if the account address is valid.
+
+    Raises:
+        errors.InvalidArgument: Invalid address format/prefix
+
+    Returns:
+        str: Address of the account
+    """
+
     async def convert(self, ctx, argument):
         expected_prefix = "bluzelle"
 
@@ -46,6 +56,15 @@ class AccountAddress(commands.Converter):
 
 
 class ValidatorAddress(commands.Converter):
+    """Converter to check if the validator address is valid.
+
+    Raises:
+        errors.InvalidArgument: Invalid address format/prefix
+
+    Returns:
+        str: Address of the account
+    """
+
     async def convert(self, ctx, argument):
         expected_prefix = "bluzellevaloper"
 
@@ -60,6 +79,27 @@ class ValidatorAddress(commands.Converter):
         if address[0] != expected_prefix:
             raise errors.InvalidArgument(
                 f"Invalid address prefix\n'{expected_prefix}' expected, '{address[0]}' found"
+            )
+
+        return argument
+
+
+class ValidFunction(commands.Converter):
+    """Converter to check if the given function exists.
+
+    Raises:
+        errors.InvalidArgument: No function exists with given name.
+
+    Returns:
+        Function: Function itself
+    """
+
+    async def convert(self, ctx, argument):
+        # Check if the function is valid
+        function = mappings.get_command_mapping(argument)
+        if not function:
+            raise errors.InvalidArgument(
+                "Invalid function name. Please be sure to add '_' inbetween words.\nEx: validator_get_details"
             )
 
         return argument

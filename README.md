@@ -2,8 +2,6 @@
 
 ## Usage
 
-Type `$help` to see a list of commands.
-
 ## Development
 
 To use this discord bot, you must have a bot set up through the discord developers portal.

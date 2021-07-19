@@ -18,13 +18,6 @@ arg_parser.add(
 )
 
 arg_parser.add(
-    "-p",
-    "--command_prefix",
-    default="$",
-    help="The symbol used before commands",
-)
-
-arg_parser.add(
     "-d",
     "--database_connection",
     default="sqlite:///data.db",

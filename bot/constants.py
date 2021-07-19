@@ -4,15 +4,7 @@ from discord import Color
     Constants useful for data module
 """
 
-CHANNEL_PREFIXES_TABLE = "channel_prefixes"
-COMMANDS_TABLE = "commands"
 TASKS_TABLE = "tasks"
-
-GUILD_ID_KEY = "guildId"
-PREFIX_KEY = "prefix"
-
-NAME_KEY = "name"
-DESCRIPTION_KEY = "description"
 
 """
     URL constants

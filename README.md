@@ -20,6 +20,7 @@ Every command and their description can be accessed by typing `/`:
   - **<a href="#CommunityPool">/community_pool </a>**
   - **<a href="#Inflation">/inflation </a>**
   - **<a href="#Price">/price </a>**
+  - **<a href="#ProposalGetAll">/proposal get all </a>**
   - **<a href="#Transaction">/transaction </a>**
   - **<a href="#ValidatorGetDelegations">/validator get delegations </a>**
   - **<a href="#ValidatorGetDetails">/validator get details </a>**
@@ -75,6 +76,12 @@ Get the price of a crypto coin.
 | Parameter | Description                            |
 | :-------- | :------------------------------------- |
 | [coin]    | Symbol of the coin. Defaults to "BLZ". |
+
+- ### /proposal get all <a id="ProposalGetAll"></a>
+
+Get the list of all proposals.
+
+![proposal_get_all](https://user-images.githubusercontent.com/36865381/126164081-0b5b5c6f-2e7e-461e-a1fe-989bc7fdd2eb.png)
 
 - ### /transaction \<hash\> <a id="Transaction"></a>
 
@@ -139,6 +146,8 @@ Add a task which will repeat given function per interval.
 \*\*Note: Function names must be without '/' and must include '\_' instead of spaces. (E.g. validator_get_details)
 
 \*\*\*Note: Parameters must be listed back to back seperated by spaces. (E.g. param1 param2 param3)
+
+Note: If the added task uses paginated responses, calls response might stay in 'Bluzelle Bot is thinking...' state until the timeout of the first function is reached, in order to confirm that it was executed successfully. Response will update once the timeout is reached.
 
 - ### /task delete \<id\> <a id="TaskDelete"></a>
 

@@ -7,7 +7,6 @@ from discord_slash import SlashCommand
 
 import config
 import errors
-import data
 from constants import *
 import cogs
 
@@ -19,7 +18,7 @@ intents.members = True
 default_prefix = "/"
 
 
-class RallyRoleBot(commands.Bot):
+class BluzelleBot(commands.Bot):
     def __init__(self):
         super().__init__(
             command_prefix=default_prefix,
@@ -61,6 +60,6 @@ class RallyRoleBot(commands.Bot):
         super().run(config.CONFIG.secret_token, reconnect=True)
 
 
-bot = RallyRoleBot()
+bot = BluzelleBot()
 if __name__ == "__main__":
     bot.run()

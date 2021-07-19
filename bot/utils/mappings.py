@@ -1,11 +1,11 @@
 from discord.enums import Enum
-from discord.ext.commands.bot import Bot
 from cogs.commands import (
     block_commands,
     economy_commands,
     transaction_commands,
     validator_commands,
     task_commands,
+    governance_commands,
 )
 import utils.converters as converters
 
@@ -23,6 +23,7 @@ class BotFunctions(str, Enum):
     add_task = "task_add"
     delete_task = "task_delete"
     tasks = "task_get_all"
+    proposals = "proposal_get_all"
 
 
 async def get_parameter_mapping(self, ctx, function, kwargs):
@@ -131,4 +132,6 @@ def get_command_mapping(function):
         return getattr(task_commands, BotFunctions.delete_task.name)
     elif function == BotFunctions.tasks.value:
         return getattr(task_commands, BotFunctions.tasks.name)
+    elif function == BotFunctions.proposals.value:
+        return getattr(governance_commands, BotFunctions.proposals.name)
     return {}

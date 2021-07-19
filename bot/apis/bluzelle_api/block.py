@@ -49,7 +49,7 @@ def get_block(height="latest"):
     time = datetime.datetime.strptime(
         block["block"]["header"]["time"][:26], "%Y-%m-%dT%H:%M:%S.%f"
     )
-    formattedTime = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
+    formatted_time = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
 
     return {
         "height": block["block"]["header"]["height"],
@@ -59,5 +59,5 @@ def get_block(height="latest"):
             "address": validator["address"],
         },
         "number_of_transactions": len(block["block"]["data"]["txs"]),
-        "time": formattedTime,
+        "time": formatted_time,
     }

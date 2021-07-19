@@ -1,7 +1,7 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_print
+from utils import pretty_embed, pretty_print
 from constants import *
 from apis.bluzelle_api import validator as validator_api
 
@@ -45,10 +45,12 @@ async def validators(self, ctx: SlashContext):
 
     await pretty_print(
         ctx,
-        validator_fields,
-        title="Validators",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            validator_fields,
+            title="Validators",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -63,75 +65,77 @@ async def validator(
 
     await pretty_print(
         ctx,
-        [
-            {
-                "name": "Self-Delegate Address",
-                "value": validator["self_delegate_address"],
-            },
-            {
-                "name": "Self Delegation Ratio",
-                "value": validator["self_delegation_ratio"],
-            },
-            {
-                "name": "Identity",
-                "value": validator["identity"],
-                "inline": False,
-            },
-            {
-                "name": "Website",
-                "value": validator["website"],
-                "inline": False,
-            },
-            {
-                "name": "Security Contact",
-                "value": validator["security_contact"],
-                "inline": False,
-            },
-            {
-                "name": "Details",
-                "value": validator["details"],
-                "inline": False,
-            },
-            {
-                "name": "Voting Power",
-                "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
-            },
-            {
-                "name": "Tokens",
-                "value": validator["tokens"],
-            },
-            {
-                "name": "Delegator Shares",
-                "value": validator["delegator_shares"],
-            },
-            {
-                "name": "Commission Rate",
-                "value": validator["commission_rate"],
-            },
-            {
-                "name": "Max Rate",
-                "value": validator["max_rate"],
-            },
-            {
-                "name": "Max Change Rate",
-                "value": validator["max_change_rate"],
-            },
-            {
-                "name": "Proposer Priority",
-                "value": validator["proposer_priority"],
-            },
-            {
-                "name": "Uptime",
-                "value": validator["uptime"],
-            },
-            {
-                "name": "\u200b",
-                "value": "\u200b",
-            },
-        ],
-        title=f"Info of '{validator['moniker']}'",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            [
+                {
+                    "name": "Self-Delegate Address",
+                    "value": validator["self_delegate_address"],
+                },
+                {
+                    "name": "Self Delegation Ratio",
+                    "value": validator["self_delegation_ratio"],
+                },
+                {
+                    "name": "Identity",
+                    "value": validator["identity"],
+                    "inline": False,
+                },
+                {
+                    "name": "Website",
+                    "value": validator["website"],
+                    "inline": False,
+                },
+                {
+                    "name": "Security Contact",
+                    "value": validator["security_contact"],
+                    "inline": False,
+                },
+                {
+                    "name": "Details",
+                    "value": validator["details"],
+                    "inline": False,
+                },
+                {
+                    "name": "Voting Power",
+                    "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                },
+                {
+                    "name": "Tokens",
+                    "value": validator["tokens"],
+                },
+                {
+                    "name": "Delegator Shares",
+                    "value": validator["delegator_shares"],
+                },
+                {
+                    "name": "Commission Rate",
+                    "value": validator["commission_rate"],
+                },
+                {
+                    "name": "Max Rate",
+                    "value": validator["max_rate"],
+                },
+                {
+                    "name": "Max Change Rate",
+                    "value": validator["max_change_rate"],
+                },
+                {
+                    "name": "Proposer Priority",
+                    "value": validator["proposer_priority"],
+                },
+                {
+                    "name": "Uptime",
+                    "value": validator["uptime"],
+                },
+                {
+                    "name": "\u200b",
+                    "value": "\u200b",
+                },
+            ],
+            title=f"Info of '{validator['moniker']}'",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -165,8 +169,10 @@ async def delegations(
 
     await pretty_print(
         ctx,
-        delegation_fields,
-        title=f"Delegations of {address}",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            delegation_fields,
+            title=f"Delegations of {address}",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )

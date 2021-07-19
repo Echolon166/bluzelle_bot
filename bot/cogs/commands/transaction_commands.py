@@ -4,7 +4,7 @@ from discord import File
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_print
+from utils import pretty_embed, pretty_print
 from constants import *
 from apis.bluzelle_api import transaction as transaction_api
 
@@ -56,10 +56,12 @@ async def transaction(self, ctx: SlashContext, hash: str):
 
         await pretty_print(
             ctx,
-            transaction_fields,
-            title="Transaction Information",
-            timestamp=True,
-            color=WHITE_COLOR,
+            pretty_embed(
+                transaction_fields,
+                title="Transaction Information",
+                timestamp=True,
+                color=WHITE_COLOR,
+            ),
         )
     else:
         transaction_fields.append(
@@ -72,10 +74,12 @@ async def transaction(self, ctx: SlashContext, hash: str):
 
         await pretty_print(
             ctx,
-            transaction_fields,
-            title="Transaction Information",
-            timestamp=True,
-            color=WHITE_COLOR,
+            pretty_embed(
+                transaction_fields,
+                title="Transaction Information",
+                timestamp=True,
+                color=WHITE_COLOR,
+            ),
         )
 
         # Send the transaction's messages to the channel as a file

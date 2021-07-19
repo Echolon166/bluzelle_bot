@@ -1,7 +1,7 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_print
+from utils import pretty_embed, pretty_print
 from constants import *
 from apis import coingecko_api
 from apis.bluzelle_api import economy as economy_api
@@ -31,40 +31,42 @@ async def price(
 
     await pretty_print(
         ctx,
-        [
-            {
-                "name": "Current Price",
-                "value": f"```diff\n${data['current_price']}```",
-                "inline": False,
-            },
-            {
-                "name": "24h Price Change",
-                "value": f"```diff\n{price_change_perc_24h}%\n```",
-            },
-            {
-                "name": "7d Price Change",
-                "value": f"```diff\n{price_change_perc_7d}%```",
-            },
-            {
-                "name": "30d Price Change",
-                "value": f"```diff\n{price_change_perc_30d}%```",
-            },
-            {
-                "name": "24h Low",
-                "value": f"```diff\n{data['low_24h']}```",
-            },
-            {
-                "name": "24h High",
-                "value": f"```diff\n{data['high_24h']}```",
-            },
-            {
-                "name": "Market Cap Rank",
-                "value": f"```diff\n{data['market_cap_rank']}```",
-            },
-        ],
-        title=f"{coin} Price Statistics",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            [
+                {
+                    "name": "Current Price",
+                    "value": f"```diff\n${data['current_price']}```",
+                    "inline": False,
+                },
+                {
+                    "name": "24h Price Change",
+                    "value": f"```diff\n{price_change_perc_24h}%\n```",
+                },
+                {
+                    "name": "7d Price Change",
+                    "value": f"```diff\n{price_change_perc_7d}%```",
+                },
+                {
+                    "name": "30d Price Change",
+                    "value": f"```diff\n{price_change_perc_30d}%```",
+                },
+                {
+                    "name": "24h Low",
+                    "value": f"```diff\n{data['low_24h']}```",
+                },
+                {
+                    "name": "24h High",
+                    "value": f"```diff\n{data['high_24h']}```",
+                },
+                {
+                    "name": "Market Cap Rank",
+                    "value": f"```diff\n{data['market_cap_rank']}```",
+                },
+            ],
+            title=f"{coin} Price Statistics",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -98,10 +100,12 @@ async def balance(
 
     await pretty_print(
         ctx,
-        balance_fields,
-        title=f"Balances of {address}",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            balance_fields,
+            title=f"Balances of {address}",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -112,15 +116,17 @@ async def inflation(self, ctx: SlashContext):
 
     await pretty_print(
         ctx,
-        [
-            {
-                "name": "Current minting inflation value",
-                "value": inflation,
-            },
-        ],
-        title="Inflation",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            [
+                {
+                    "name": "Current minting inflation value",
+                    "value": inflation,
+                },
+            ],
+            title="Inflation",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -152,8 +158,10 @@ async def community_pool(self, ctx: SlashContext):
 
     await pretty_print(
         ctx,
-        pool_fields,
-        title="Community Pool",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            pool_fields,
+            title="Community Pool",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )

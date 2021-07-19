@@ -32,12 +32,12 @@ def get_transaction(hash):
     time = datetime.datetime.strptime(
         transaction["tx_response"]["timestamp"][:26], "%Y-%m-%dT%H:%M:%SZ"
     )
-    formattedTime = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
+    formatted_time = time.strftime("%d %b %Y, %#I:%M:%S%p UTC")
 
     return {
         "hash": transaction["tx_response"]["txhash"],
         "height": transaction["tx_response"]["height"],
-        "time": formattedTime,
+        "time": formatted_time,
         "gas": f"{gas_used_seperated} / {gas_wanted_seperated}",
         "fee": f"{float(transaction_fee['amount']) / BLZ_UBNT_RATIO} {denom}",
         "memo": transaction["tx_response"]["tx"]["body"]["memo"],

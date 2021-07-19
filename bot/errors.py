@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from constants import *
-from utils import pretty_print
+from utils import pretty_embed, pretty_print
 
 
 class InvalidArgument(commands.CommandError):
@@ -48,35 +48,43 @@ def standart_error_handler(error_function):
         if isinstance(error, errors.DisabledCommand):
             await pretty_print(
                 ctx,
-                "This command is disabled!",
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "This command is disabled!",
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
 
         elif isinstance(error, errors.MemberNotFound):
             await pretty_print(
                 ctx,
-                str(error) + "\nNote: This command is case-sensitive." + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    str(error) + "\nNote: This command is case-sensitive." + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
         elif isinstance(error, errors.RoleNotFound):
             await pretty_print(
                 ctx,
-                str(error) + "\nNote: This command is case-sensitive." + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    str(error) + "\nNote: This command is case-sensitive." + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
         elif isinstance(error, errors.NoPrivateMessage):
             await pretty_print(
                 ctx,
-                "This command cannot be run in a private message." + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "This command cannot be run in a private message." + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
@@ -88,27 +96,33 @@ def standart_error_handler(error_function):
                 print("Could not delete message.")
             await pretty_print(
                 ctx,
-                "This command should be run in a Private Message only!" + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "This command should be run in a Private Message only!" + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
 
         elif isinstance(error, errors.MissingRole):
             await pretty_print(
                 ctx,
-                str(error) + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    str(error) + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
         elif isinstance(error, errors.CheckFailure):
             await pretty_print(
                 ctx,
-                "Could not run command, do you have sufficient permissions in this channel?"
-                + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "Could not run command, do you have sufficient permissions in this channel?"
+                    + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
@@ -116,9 +130,11 @@ def standart_error_handler(error_function):
             await ctx.send_help(ctx.command)
             await pretty_print(
                 ctx,
-                "Could not run command, is it formatted properly?" + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "Could not run command, is it formatted properly?" + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
@@ -126,27 +142,33 @@ def standart_error_handler(error_function):
             await ctx.send_help(ctx.command)
             await pretty_print(
                 ctx,
-                "Missing required arguments.",
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    "Missing required arguments.",
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
         elif isinstance(error, InvalidArgument):
             await pretty_print(
                 ctx,
-                error.message + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    error.message + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 
         elif isinstance(error, RequestError):
             await pretty_print(
                 ctx,
-                error.message + extra,
-                title="Error",
-                color=ERROR_COLOR,
+                pretty_embed(
+                    error.message + extra,
+                    title="Error",
+                    color=ERROR_COLOR,
+                ),
             )
             return
 

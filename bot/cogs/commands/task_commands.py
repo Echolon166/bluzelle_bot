@@ -4,7 +4,7 @@ from discord import TextChannel
 from discord_slash import SlashContext
 
 import data
-from utils import pretty_print
+from utils import pretty_embed, pretty_print
 from constants import *
 import utils.mappings as mappings
 
@@ -35,10 +35,12 @@ async def add_task(
 
     await pretty_print(
         ctx,
-        {},
-        title=f"Task:'{function}' added successfully.",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            {},
+            title=f"Task:'{function}' added successfully.",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -51,10 +53,12 @@ async def delete_task(
 
     await pretty_print(
         ctx,
-        {},
-        title=f"Task:'{id}' deleted successfully.",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            {},
+            title=f"Task:'{id}' deleted successfully.",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )
 
 
@@ -96,8 +100,10 @@ async def tasks(self, ctx: SlashContext):
 
     await pretty_print(
         ctx,
-        task_fields,
-        title="Active Tasks",
-        timestamp=True,
-        color=WHITE_COLOR,
+        pretty_embed(
+            task_fields,
+            title="Active Tasks",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
     )

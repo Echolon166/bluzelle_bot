@@ -18,7 +18,7 @@ from discord_slash.utils.manage_components import (
 async def Paginator(
     bot: commands.bot,
     ctx: SlashContext,
-    pages: list[discord.Embed],
+    pages: list,
     content: Optional[str] = None,
     previous_label: str = None,
     next_label: str = None,

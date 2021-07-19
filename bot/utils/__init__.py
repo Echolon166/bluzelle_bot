@@ -108,7 +108,7 @@ async def pretty_print(
 async def pretty_print_paginate(
     bot: commands.bot,
     ctx: SlashContext,
-    embeds: list[Embed],
+    embeds: list,
     timeout=20,
     caption="",
 ):

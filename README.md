@@ -4,6 +4,8 @@ Discord Bot for gathering data from the Bluzelle Network and publishing it into 
 
 **Currently only supports the private testnet**, can be easily configured to support other networks once they hit Stargate.
 
+Video Demo: https://youtu.be/WAIVpjEBibw
+
 ## Usage
 
 Supports Discord's new [slash commands](https://discord.com/developers/docs/interactions/slash-commands), which makes using the bot much easier for the user.

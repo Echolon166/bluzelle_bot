@@ -1,12 +1,14 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print
+from utils import pretty_embed, pretty_print, pretty_print_paginate
 from constants import *
 from apis.bluzelle_api import validator as validator_api
 
 
 async def validators(self, ctx: SlashContext):
+    pg_threshold = 7
+
     validators = validator_api.get_validators()
     if validators is None:
         raise errors.RequestError("There was an error while fetching the validators")
@@ -17,41 +19,90 @@ async def validators(self, ctx: SlashContext):
         if d["jailed"] == False and d["status"] == "BOND_STATUS_BONDED"
     ]
 
-    validator_fields = []
-    validator_fields.append(
-        {
-            "name": "Active Validators",
-            "value": f"{len(active_validators)} out of {len(validators)} validators",
-            "inline": False,
-        },
-    )
-    for validator in active_validators:
-        validator_fields.extend(
-            [
-                {
-                    "name": "Moniker",
-                    "value": validator["moniker"],
-                },
-                {
-                    "name": "Operator Address",
-                    "value": validator["address"],
-                },
-                {
-                    "name": "Voting Power",
-                    "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
-                },
-            ]
-        )
-
     await pretty_print(
         ctx,
         pretty_embed(
-            validator_fields,
+            [
+                {
+                    "name": "Active Validators",
+                    "value": f"{len(active_validators)} out of {len(validators)} validators",
+                    "inline": False,
+                },
+            ],
             title="Validators",
             timestamp=True,
             color=WHITE_COLOR,
         ),
     )
+
+    validator_list = []
+    if len(active_validators) <= pg_threshold:
+        for validator in active_validators:
+            validator_list.extend(
+                [
+                    {
+                        "name": "Moniker",
+                        "value": validator["moniker"],
+                    },
+                    {
+                        "name": "Operator Address",
+                        "value": validator["address"],
+                    },
+                    {
+                        "name": "Voting Power",
+                        "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                    },
+                ],
+            )
+
+        await pretty_print(
+            ctx,
+            pretty_embed(
+                validator_list,
+                title="Validators",
+                timestamp=True,
+                color=WHITE_COLOR,
+            ),
+        )
+    else:
+        x = 0
+        validator_embeds = []
+        for validator in active_validators:
+            validator_list.extend(
+                [
+                    {
+                        "name": "Moniker",
+                        "value": validator["moniker"],
+                    },
+                    {
+                        "name": "Operator Address",
+                        "value": validator["address"],
+                    },
+                    {
+                        "name": "Voting Power",
+                        "value": f"{validator['voting_power']} ({validator['voting_power_percentage']})",
+                    },
+                ],
+            )
+
+            if x % pg_threshold == pg_threshold - 1 or x == len(active_validators) - 1:
+                validator_embeds.append(
+                    pretty_embed(
+                        validator_list,
+                        title="Validators",
+                        timestamp=True,
+                        color=WHITE_COLOR,
+                    ),
+                )
+
+                validator_list = []
+            x += 1
+
+        await pretty_print_paginate(
+            self.bot,
+            ctx,
+            validator_embeds,
+        )
 
 
 async def validator(

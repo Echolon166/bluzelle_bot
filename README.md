@@ -126,7 +126,7 @@ Get details of given validator.
 
 Get the list of all validators.
 
-![validator_get_all_output](https://user-images.githubusercontent.com/36865381/126080466-9310725f-bf21-4cc7-94ea-e13323df4026.png)
+![validator_get_all](https://user-images.githubusercontent.com/36865381/126189547-367de80a-34d5-4c20-a716-b2a1a556c4ab.png)
 
 ## Admin Commands
 
@@ -202,7 +202,7 @@ Then simply install the requirements and run `py -3 bot/main.py --secret_token <
 
 ![scopes_permissions](https://user-images.githubusercontent.com/36865381/126082212-6e58c308-6c7e-4fdd-863f-0700ccf4a64c.png)
 
-**<a href="#Important">IMPORTANT: Run the bot first before inviting to bot into your server. </a>**
+**<a href="#Important">IMPORTANT: Run the bot first before inviting the bot into your server. </a>**
 
 - Open the link you just generated and click `Continue`.
 

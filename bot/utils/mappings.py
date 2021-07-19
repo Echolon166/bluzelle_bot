@@ -24,6 +24,7 @@ class BotFunctions(str, Enum):
     delete_task = "task_delete"
     tasks = "task_get_all"
     proposals = "proposal_get_all"
+    proposal = "proposal_get_details"
 
 
 async def get_parameter_mapping(self, ctx, function, kwargs):
@@ -56,6 +57,8 @@ async def get_parameter_mapping(self, ctx, function, kwargs):
         return await delegations_parameter_mapping(self, ctx, kwargs[0])
     elif function == BotFunctions.transaction.value:
         return await transaction_parameter_mapping(self, ctx, kwargs[0])
+    elif function == BotFunctions.proposal.value:
+        return await proposal_parameter_mapping(self, ctx, kwargs[0])
     elif function == BotFunctions.balance.value:
         return await balance_parameter_mapping(self, ctx, kwargs[0])
 
@@ -77,6 +80,12 @@ async def validator_parameter_mapping(self, ctx, address):
 async def delegations_parameter_mapping(self, ctx, address):
     return {
         "address": await converters.ValidatorAddress.convert(self, ctx, address),
+    }
+
+
+async def proposal_parameter_mapping(self, ctx, id):
+    return {
+        "id": id,
     }
 
 
@@ -134,4 +143,6 @@ def get_command_mapping(function):
         return getattr(task_commands, BotFunctions.tasks.name)
     elif function == BotFunctions.proposals.value:
         return getattr(governance_commands, BotFunctions.proposals.name)
+    elif function == BotFunctions.proposal.value:
+        return getattr(governance_commands, BotFunctions.proposal.name)
     return {}

@@ -1,3 +1,6 @@
+import io
+
+from discord import File
 from discord_slash import SlashContext
 
 import errors
@@ -70,3 +73,113 @@ async def proposals(self, ctx: SlashContext):
                 ctx,
                 proposal_embeds,
             )
+
+
+async def proposal(
+    self,
+    ctx: SlashContext,
+    id,
+):
+    proposal = governance_api.get_proposal_by_id(id)
+    if proposal is None:
+        raise errors.RequestError("There was an error while fetching the proposal")
+
+    proposal_fields = [
+        {
+            "name": "Proposer",
+            "value": proposal["proposer"],
+        },
+        {
+            "name": "Title",
+            "value": proposal["title"],
+            "inline": False,
+        },
+        {
+            "name": "Proposal Type",
+            "value": proposal["type"],
+        },
+        {
+            "name": "Proposal Status",
+            "value": proposal["status"],
+        },
+        {
+            "name": "Deposit",
+            "value": proposal["total_deposit"],
+        },
+        {
+            "name": "Tally Result (final)",
+            "value": f"Yes: {proposal['final_tally_result']['yes']}\nAbstain: {proposal['final_tally_result']['abstain']}\nNo: {proposal['final_tally_result']['no']}\nNo with Veto: {proposal['final_tally_result']['no_with_veto']}",
+            "inline": False,
+        },
+        {
+            "name": "Submit Time",
+            "value": proposal["submit_time"],
+        },
+        {
+            "name": "Deposit End Time",
+            "value": proposal["deposit_end_time"],
+        },
+        {
+            "name": "\u200b",
+            "value": "\u200b",
+        },
+        {
+            "name": "Voting Start Time",
+            "value": proposal["voting_start_time"],
+        },
+        {
+            "name": "End Voting Time",
+            "value": proposal["voting_end_time"],
+        },
+        {
+            "name": "\u200b",
+            "value": "\u200b",
+        },
+    ]
+
+    if len(proposal["description"]) <= 1018:
+        proposal_fields.insert(
+            2,
+            {
+                "name": "Description",
+                "value": proposal["description"],
+                "inline": False,
+            },
+        )
+
+        await pretty_print(
+            ctx,
+            pretty_embed(
+                proposal_fields,
+                title=f"Proposal {proposal['id']}",
+                timestamp=True,
+                color=WHITE_COLOR,
+            ),
+        )
+    else:
+        proposal_fields.insert(
+            2,
+            {
+                "name": "Description",
+                "value": "⬇️ Too long to fit inside the embed. Written in the file below. ⬇️",
+                "inline": False,
+            },
+        )
+
+        await pretty_print(
+            ctx,
+            pretty_embed(
+                proposal_fields,
+                title=f"Proposal {proposal['id']}",
+                timestamp=True,
+                color=WHITE_COLOR,
+            ),
+        )
+
+        # Send the proposal's description to the channel as a file
+        await ctx.send(
+            file=File(
+                io.StringIO(proposal["description"]),
+                "proposal_description.txt",
+            )
+        )

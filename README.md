@@ -20,6 +20,7 @@ Every command and their description can be accessed by typing `/`:
   - **<a href="#CommunityPool">/community_pool </a>**
   - **<a href="#Inflation">/inflation </a>**
   - **<a href="#Price">/price </a>**
+  - **<a href="#ProposalGetDetails">/proposal get details </a>**
   - **<a href="#ProposalGetAll">/proposal get all </a>**
   - **<a href="#Transaction">/transaction </a>**
   - **<a href="#ValidatorGetDelegations">/validator get delegations </a>**
@@ -76,6 +77,14 @@ Get the price of a crypto coin.
 | Parameter | Description                            |
 | :-------- | :------------------------------------- |
 | [coin]    | Symbol of the coin. Defaults to "BLZ". |
+
+- ### /proposal get details \<id\> <a id="ProposalGetDetails"></a>
+
+![proposal_get_details](https://user-images.githubusercontent.com/36865381/126179845-f8fdc1ec-462a-43c7-a2c8-b075e6d790d4.png)
+
+| Parameter | Description         |
+| :-------- | :------------------ |
+| \<id\>    | Id of the proposal. |
 
 - ### /proposal get all <a id="ProposalGetAll"></a>
 

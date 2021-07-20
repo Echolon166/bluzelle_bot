@@ -20,6 +20,7 @@ Every command and their description can be accessed by typing `/`:
   - **<a href="#Balance">/balance </a>**
   - **<a href="#Block">/block </a>**
   - **<a href="#CommunityPool">/community_pool </a>**
+  - **<a href="#ConsensusState">/consensus_state </a>**
   - **<a href="#Inflation">/inflation </a>**
   - **<a href="#Price">/price </a>**
   - **<a href="#ProposalGetDetails">/proposal get details </a>**
@@ -63,6 +64,12 @@ Get a block at a certain heigh.
 Get community pool coins.
 
 ![community_pool_output](https://user-images.githubusercontent.com/36865381/126080204-75b55a4d-0ad8-4e8d-be0f-b6f497a9f229.png)
+
+- ### /consensus_state <a id="ConsensusState"></a>
+
+Get consensus state.
+
+![consensus_state](https://user-images.githubusercontent.com/36865381/126291066-7bd164d7-758f-46ed-8798-e128f4de520d.png)
 
 - ### /inflation <a id="Inflation"></a>
 

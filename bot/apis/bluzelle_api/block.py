@@ -61,3 +61,42 @@ def get_block(height="latest"):
         "number_of_transactions": len(block["block"]["data"]["txs"]),
         "time": formatted_time,
     }
+
+
+def consensus_state():
+    """Get consensus state
+
+    Returns:
+        dict: A dict which consists of following keys:
+            height, round, setp, proposer, proposer['moniker'], proposer['address'], voting_power
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_RPC_PORT}/dump_consensus_state"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+
+    consensus_state = result.json()["result"]["round_state"]
+
+    # Get validator wih matcing pub_key
+    validator = get_validator_by_pub_key(
+        consensus_state["validators"]["proposer"]["pub_key"]["value"]
+    )
+    if validator is None:
+        return None
+
+    # Get voting power
+    consensus_round = consensus_state["round"]
+    consensus_votes = consensus_state["votes"][consensus_round]["prevotes_bit_array"]
+    voting_power = round(float(consensus_votes.split(" ")[3]) * 100.0)
+
+    return {
+        "height": consensus_state["height"],
+        "round": str(consensus_round),
+        "step": str(consensus_state["step"]),
+        "proposer": {
+            "moniker": validator["moniker"],
+            "address": validator["address"],
+        },
+        "voting_power": str(voting_power),
+    }

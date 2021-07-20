@@ -12,6 +12,7 @@ import utils.converters as converters
 
 class BotFunctions(str, Enum):
     block = "block"
+    consensus_state = "consensus_state"
     balance = "balance"
     community_pool = "community_pool"
     inflation = "inflation"
@@ -119,6 +120,8 @@ def get_command_mapping(function):
 
     if function == BotFunctions.block.value:
         return getattr(block_commands, BotFunctions.block.name)
+    elif function == BotFunctions.consensus_state.value:
+        return getattr(block_commands, BotFunctions.consensus_state.name)
     elif function == BotFunctions.balance.value:
         return getattr(economy_commands, BotFunctions.balance.name)
     elif function == BotFunctions.community_pool.value:

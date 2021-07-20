@@ -44,3 +44,45 @@ async def block(self, ctx: SlashContext, height: str = "latest"):
             color=WHITE_COLOR,
         ),
     )
+
+
+async def consensus_state(self, ctx: SlashContext):
+    consensus_state = block_api.consensus_state()
+    if consensus_state is None:
+        raise errors.RequestError(
+            "There was an error while fetching the consensus state"
+        )
+
+    await pretty_print(
+        ctx,
+        pretty_embed(
+            [
+                {
+                    "name": "Height",
+                    "value": consensus_state["height"],
+                    "inline": False,
+                },
+                {
+                    "name": "Round",
+                    "value": consensus_state["round"],
+                },
+                {
+                    "name": "Step",
+                    "value": consensus_state["step"],
+                },
+                {
+                    "name": "Proposer",
+                    "value": consensus_state["proposer"]["moniker"],
+                    "inline": False,
+                },
+                {
+                    "name": "Voting Power",
+                    "value": consensus_state["voting_power"],
+                    "inline": False,
+                },
+            ],
+            title="Consensus State",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
+    )

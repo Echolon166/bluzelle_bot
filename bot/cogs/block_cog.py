@@ -31,6 +31,14 @@ class Block(commands.Cog):
         await ping_api(ctx)
         await block_commands.block(self, ctx, height)
 
+    @cog_ext.cog_slash(
+        name="consensus_state",
+        description="Get the consensus state",
+    )
+    async def consensus_state(self, ctx: SlashContext):
+        await ping_api(ctx)
+        await block_commands.consensus_state(self, ctx)
+
 
 def setup(bot):
     bot.add_cog(Block(bot))

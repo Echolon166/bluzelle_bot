@@ -1,7 +1,7 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print
+from utils.printer import pretty_embed, pretty_print
 from constants import *
 from apis.bluzelle_api import block as block_api
 

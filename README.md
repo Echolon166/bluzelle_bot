@@ -22,6 +22,7 @@ Every command and their description can be accessed by typing `/`:
   - **<a href="#CommunityPool">/community_pool </a>**
   - **<a href="#ConsensusState">/consensus_state </a>**
   - **<a href="#Inflation">/inflation </a>**
+  - **<a href="#OnlineVotingPower">/online_voting_power </a>**
   - **<a href="#Price">/price </a>**
   - **<a href="#ProposalGetDetails">/proposal get details </a>**
   - **<a href="#ProposalGetAll">/proposal get all </a>**
@@ -76,6 +77,12 @@ Get consensus state.
 Get current minting inflation value.
 
 ![inflation_output](https://user-images.githubusercontent.com/36865381/126080276-98713544-e152-4e51-9403-3e1619f24f1f.png)
+
+- ### /online_voting_power <a id="OnlineVotingPower"></a>
+
+Get online voting power of the network.
+
+![online_voting_power](https://user-images.githubusercontent.com/36865381/126317799-32e86d97-fcea-4309-a1e4-1163a384eb52.png)
 
 - ### /price [coin] <a id="Price"></a>
 

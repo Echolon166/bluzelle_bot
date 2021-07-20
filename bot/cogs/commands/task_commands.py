@@ -4,7 +4,7 @@ from discord import TextChannel
 from discord_slash import SlashContext
 
 import data
-from utils import pretty_embed, pretty_print, pretty_print_paginate
+from utils.printer import pretty_embed, pretty_print, pretty_print_paginate
 from constants import *
 import utils.mappings as mappings
 

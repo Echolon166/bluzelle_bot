@@ -53,6 +53,14 @@ class Governance(commands.Cog):
             id,
         )
 
+    @cog_ext.cog_slash(
+        name="online_voting_power",
+        description="Get online voting power of the network",
+    )
+    async def online_voting_power(self, ctx: SlashContext):
+        await ping_api(ctx)
+        await governance_commands.online_voting_power(self, ctx)
+
 
 def setup(bot):
     bot.add_cog(Governance(bot))

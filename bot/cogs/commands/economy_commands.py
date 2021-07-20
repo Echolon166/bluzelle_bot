@@ -1,7 +1,7 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print
+from utils.printer import pretty_embed, pretty_print
 from constants import *
 from apis import coingecko_api
 from apis.bluzelle_api import economy as economy_api

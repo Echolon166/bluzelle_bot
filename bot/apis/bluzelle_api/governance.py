@@ -3,7 +3,9 @@ import requests
 import datetime
 
 from apis import returnReqError
+from apis.bluzelle_api.economy import get_pooled_tokens, get_total_supply
 from constants import *
+from utils import human_format
 
 
 def get_proposals():
@@ -165,4 +167,30 @@ def get_proposal_by_id(id):
         "voting_start_time": formatted_voting_start_time,
         "voting_end_time": formatted_voting_end_time,
         "total_deposit": f"{amount} {BLZ_SYMBOL}",
+    }
+
+
+def get_online_voting_power():
+    """Get online voting power of the network
+
+    Returns:
+        dict: A dict which consists of following keys:
+            voting_power, supply_percentage, total_supply
+    """
+
+    # Get total pooled bonded tokens
+    pooled_tokens = get_pooled_tokens()
+    if pooled_tokens["bonded_tokens"] is None:
+        return None
+
+    total_voting_power = int(pooled_tokens["bonded_tokens"]) / BLZ_UBNT_RATIO
+
+    total_supply = get_total_supply(BLZ_DENOM)
+    if not total_supply:
+        return None
+
+    return {
+        "voting_power": human_format(total_voting_power),
+        "supply_percentage": f"{'{:.2f}'.format(total_voting_power / total_supply * 100)}%",
+        "total_supply": f"{human_format(total_supply)} {BLZ_SYMBOL}",
     }

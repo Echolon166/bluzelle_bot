@@ -18,7 +18,11 @@ def get_transaction(hash):
 
     transaction_fee = transaction["tx_response"]["tx"]["auth_info"]["fee"]["amount"][0]
 
-    denom = "BLZ" if transaction_fee["denom"] == "ubnt" else transaction_fee["denom"]
+    denom = (
+        BLZ_SYMBOL
+        if transaction_fee["denom"] == BLZ_DENOM
+        else transaction_fee["denom"]
+    )
 
     gas_used_seperated = re.sub(
         r"(?<!^)(?=(\d{3})+$)", r",", transaction["tx_response"]["gas_used"]

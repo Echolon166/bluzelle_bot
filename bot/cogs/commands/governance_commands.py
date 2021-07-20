@@ -4,7 +4,7 @@ from discord import File
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print, pretty_print_paginate
+from utils.printer import pretty_embed, pretty_print, pretty_print_paginate
 from constants import *
 from apis.bluzelle_api import governance as governance_api
 
@@ -183,3 +183,27 @@ async def proposal(
                 "proposal_description.txt",
             )
         )
+
+
+async def online_voting_power(self, ctx: SlashContext):
+    online_voting_power = governance_api.get_online_voting_power()
+    if online_voting_power is None:
+        raise errors.RequestError(
+            "There was an error while fetching the online voting power"
+        )
+
+    await pretty_print(
+        ctx,
+        pretty_embed(
+            [
+                {
+                    "name": online_voting_power["voting_power"],
+                    "value": f"{online_voting_power['supply_percentage']} from {online_voting_power['total_supply']}",
+                    "inline": False,
+                },
+            ],
+            title="Online Voting Power (Now)",
+            timestamp=True,
+            color=WHITE_COLOR,
+        ),
+    )

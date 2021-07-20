@@ -1,7 +1,7 @@
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print, pretty_print_paginate
+from utils.printer import pretty_embed, pretty_print, pretty_print_paginate
 from constants import *
 from apis.bluzelle_api import validator as validator_api
 

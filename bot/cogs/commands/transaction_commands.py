@@ -4,7 +4,7 @@ from discord import File
 from discord_slash import SlashContext
 
 import errors
-from utils import pretty_embed, pretty_print
+from utils.printer import pretty_embed, pretty_print
 from constants import *
 from apis.bluzelle_api import transaction as transaction_api
 

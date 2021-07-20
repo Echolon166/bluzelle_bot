@@ -62,7 +62,7 @@ def get_balances(address):
 
     balance_list = []
     for balance in balances:
-        denom = "BLZ" if balance["denom"] == "ubnt" else balance["denom"]
+        denom = BLZ_SYMBOL if balance["denom"] == BLZ_DENOM else balance["denom"]
 
         amount_partition = str(float(balance["amount"]) / BLZ_UBNT_RATIO).partition(".")
         amount_seperated = re.sub(r"(?<!^)(?=(\d{3})+$)", r",", amount_partition[0])
@@ -95,7 +95,7 @@ def get_community_pools():
 
     pool_list = []
     for pool in pools:
-        denom = "BLZ" if pool["denom"] == "ubnt" else pool["denom"]
+        denom = BLZ_SYMBOL if pool["denom"] == BLZ_DENOM else pool["denom"]
 
         amount_partition = str(float(pool["amount"]) / BLZ_UBNT_RATIO).partition(".")
         amount_seperated = re.sub(r"(?<!^)(?=(\d{3})+$)", r",", amount_partition[0])
@@ -108,3 +108,22 @@ def get_community_pools():
         )
 
     return pool_list
+
+
+def get_total_supply(denom):
+    """Get total supply of a coin
+
+    Args:
+        denom (str): Denom of the coin
+
+    Returns:
+        float: Total supply of the coin
+    """
+
+    url = f"{BLUZELLE_PRIVATE_TESTNET_URL}:{BLUZELLE_API_PORT}/cosmos/bank/v1beta1/supply/{denom}"
+    result = requests.get(url)
+    if result.status_code != 200:
+        returnReqError(url, result)
+        return None
+
+    return float(result.json()["amount"]["amount"]) / BLZ_UBNT_RATIO

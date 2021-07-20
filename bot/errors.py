@@ -2,7 +2,7 @@ from discord.ext import commands
 from discord.ext.commands import errors
 
 from constants import *
-from utils import pretty_embed, pretty_print
+from utils.printer import pretty_embed, pretty_print
 
 
 class InvalidArgument(commands.CommandError):

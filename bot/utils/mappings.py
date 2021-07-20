@@ -26,6 +26,7 @@ class BotFunctions(str, Enum):
     tasks = "task_get_all"
     proposals = "proposal_get_all"
     proposal = "proposal_get_details"
+    online_voting_power = "online_voting_power"
 
 
 async def get_parameter_mapping(self, ctx, function, kwargs):
@@ -148,4 +149,6 @@ def get_command_mapping(function):
         return getattr(governance_commands, BotFunctions.proposals.name)
     elif function == BotFunctions.proposal.value:
         return getattr(governance_commands, BotFunctions.proposal.name)
+    elif function == BotFunctions.online_voting_power.value:
+        return getattr(governance_commands, BotFunctions.online_voting_power.name)
     return {}

@@ -1,4 +1,4 @@
-# Bluezelle Discord Bot
+# Bluzelle Discord Bot
 
 Discord Bot for gathering data from the Bluzelle Network and publishing it into a discord server.
 

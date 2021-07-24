@@ -52,7 +52,7 @@ Get balance of an account.
 
 - ### /block [height] <a id="Block"></a>
 
-Get a block at a certain heigh.
+Get a block at a certain height.
 
 ![block_output](https://user-images.githubusercontent.com/36865381/126080218-eca93c68-3c9f-45c6-ac12-58cfa7e2dfbf.png)
 
@@ -292,6 +292,6 @@ To fix this, you can give bot required permissions on each of the channels which
 
 ![select_bot_permission](https://user-images.githubusercontent.com/36865381/126852161-5d605b6a-772d-40c9-8b75-318c6b2a57bc.png)
 
-- Select required permissions (**View Channel**, **Send Messages**, **Embed Links** and **Attach Files**) and click `Save Changes`. Bot is ready to be used in the channel.
+- Select `✓` for required permissions (**View Channel**, **Send Messages**, **Embed Links** and **Attach Files**) and click `Save Changes`. Bot is ready to be used in the channel.
 
 ![select_permissions](https://user-images.githubusercontent.com/36865381/126852168-f6541bda-34f2-42e9-90d3-66334c9f6f08.png)

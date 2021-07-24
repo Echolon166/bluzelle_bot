@@ -9,12 +9,12 @@ from discord_slash.model import SlashCommandOptionType
 from discord_slash.utils.manage_commands import create_option
 from cogs.commands import ping_api
 
-import data
 import utils.converters as converters
 import utils.mappings as mappings
 import validation
 from constants import *
 import cogs.commands.task_commands as task_commands
+import utils.task_manager as task_manager
 
 
 class Task(commands.Cog):
@@ -37,18 +37,16 @@ class Task(commands.Cog):
         await self.bot.wait_until_ready()
 
         with self.task_run_lock:
-            all_tasks = data.get_tasks()
+            all_tasks = task_manager.get_tasks()
             for task in all_tasks:
                 try:
                     current_time = time.time()
                     # If interval amount of time has passed since latest_execution, execute the function
-                    if current_time >= int(task["latest_execution"]) + int(
-                        task["interval"]
-                    ):
+                    if current_time >= int(task.latest_execution) + int(task.interval):
                         # Get function object, kwargs and channel_id
-                        task_function = mappings.get_command_mapping(task["function"])
-                        kwargs = task["kwargs"]
-                        channel_id = task["channel_id"]
+                        task_function = mappings.get_command_mapping(task.function)
+                        kwargs = task.kwargs
+                        channel_id = task.channel_id
 
                         # Fetch the channel
                         channel = await self.bot.fetch_channel(channel_id)
@@ -57,8 +55,7 @@ class Task(commands.Cog):
                         asyncio.create_task(task_function(self, channel, **kwargs))
 
                         # Update latest_execution of the task
-                        task["latest_execution"] = current_time
-                        data.update_task(task)
+                        task.latest_execution = current_time
                 except Exception as e:
                     print(e)
 

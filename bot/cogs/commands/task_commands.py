@@ -3,10 +3,11 @@ import time
 from discord import TextChannel
 from discord_slash import SlashContext
 
-import data
 from utils.printer import pretty_embed, pretty_print, pretty_print_paginate
 from constants import *
+import errors
 import utils.mappings as mappings
+import utils.task_manager as task_manager
 
 
 async def add_task(
@@ -18,20 +19,14 @@ async def add_task(
     function,
     kwargs=None,
 ):
-    task = {
-        "channel_id": channel.id,
-        "latest_execution": time.time(),
-        "interval": interval,
-        "kwargs": kwargs,
-        "function": function,
-    }
+    task = task_manager.task(channel.id, time.time(), interval, kwargs, function)
 
     # Call for the first time to test if there are any errors, doesn't add the task if there is any
-    task_function = mappings.get_command_mapping(task["function"])
+    task_function = mappings.get_command_mapping(task.function)
 
     await task_function(self, channel, **kwargs)
 
-    data.add_task(task)
+    task_manager.add_task(task)
 
     await pretty_print(
         ctx,
@@ -49,7 +44,9 @@ async def delete_task(
     ctx: SlashContext,
     id: int,
 ):
-    data.delete_task(id)
+    result = task_manager.delete_task(id)
+    if result is False:
+        raise errors.InvalidArgument(f"Task with id:{id} not found.")
 
     await pretty_print(
         ctx,
@@ -65,32 +62,32 @@ async def delete_task(
 async def tasks(self, ctx: SlashContext):
     pg_threshold = 3
 
-    tasks = data.get_tasks()
+    tasks = task_manager.get_tasks()
 
     task_list = []
     if len(tasks) <= pg_threshold:
         for task in tasks:
             parameters = ""
-            for key, value in task["kwargs"].items():
+            for key, value in task.kwargs.items():
                 parameters += f"{key}: {value}\n"
 
             task_list.extend(
                 [
                     {
                         "name": "ID",
-                        "value": task["id"],
+                        "value": str(task.id),
                     },
                     {
                         "name": "Channel",
-                        "value": f"<#{task['channel_id']}>",
+                        "value": f"<#{task.channel_id}>",
                     },
                     {
                         "name": "Interval",
-                        "value": f"{task['interval']} seconds",
+                        "value": f"{task.interval} seconds",
                     },
                     {
                         "name": "Function",
-                        "value": task["function"],
+                        "value": task.function,
                         "inline": False,
                     },
                     {

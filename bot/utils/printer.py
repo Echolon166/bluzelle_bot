@@ -5,7 +5,6 @@ from discord.ext import commands
 
 from discord_slash.context import SlashContext
 
-from utils.ext import *
 from utils.paginator import Paginator
 
 

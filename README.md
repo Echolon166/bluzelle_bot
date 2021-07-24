@@ -218,7 +218,7 @@ Then simply install the requirements and run `py -3 bot/main.py --secret_token <
 
 ![scopes_permissions](https://user-images.githubusercontent.com/36865381/126082212-6e58c308-6c7e-4fdd-863f-0700ccf4a64c.png)
 
-**<a href="#Important">IMPORTANT: Run the bot first before inviting the bot into your server. </a>**
+**<a href="#MissingSlashCommands">IMPORTANT: Run the bot first before inviting the bot into your server. </a>**
 
 - Open the link you just generated and click `Continue`.
 
@@ -246,7 +246,9 @@ Then simply install the requirements and run `py -3 bot/main.py --secret_token <
 
 - `python bot/main.py`
 
-#### Important <a id="Important"></a>
+## Possible Errors and Solutions
+
+### Slash Commands are Missing <a id="MissingSlashCommands"></a>
 
 In order to see the slash commands, the commands first must be uploaded to the discord's slash commands API.
 To ensure that, run the bot at least once before adding it to the server.
@@ -254,3 +256,24 @@ To ensure that, run the bot at least once before adding it to the server.
 If you can't see the slash commands below after typing `/`, kick and reinvite the bot after running it.
 
 ![slash_commands](https://user-images.githubusercontent.com/36865381/126082805-c7661f6e-5337-4116-b50d-131a1fdf293a.png)
+
+### Missing Access <a id="MissingAccess"></a>
+
+If your server restricts @everyone(default permissions) from sending messages to some channels, `/task` commands might not work in those channels.
+To fix this, you can give bot required permissions on each of the channels which you want to use the task commands.
+
+- Go to your required channel and click `Edit Channel`.
+
+![edit_channel](https://user-images.githubusercontent.com/36865381/126852151-e653698a-1b9b-439b-96a2-965c17b2643e.png)
+
+- Navigate to permissions, scroll down to advanced permissions and click `+` on Roles/Members.
+
+![add_new_role](https://user-images.githubusercontent.com/36865381/126852158-f5cf52b2-b8b9-4d03-985b-2d7d4a5d4d42.png)
+
+- Select your bot's role.
+
+![select_bot_permission](https://user-images.githubusercontent.com/36865381/126852161-5d605b6a-772d-40c9-8b75-318c6b2a57bc.png)
+
+- Select required permissions (**View Channel**, **Send Messages**, **Embed Links** and **Attach Files**) and click `Save Changes`. Bot is ready to be used in the channel.
+
+![select_permissions](https://user-images.githubusercontent.com/36865381/126852168-f6541bda-34f2-42e9-90d3-66334c9f6f08.png)

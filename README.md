@@ -232,19 +232,37 @@ Then simply install the requirements and run `py -3 bot/main.py --secret_token <
 
 ![authorized](https://user-images.githubusercontent.com/36865381/126081990-f8e2f87e-c22b-414f-8c08-248220aff306.png)
 
+#### Set up your development environment:
+
+##### Linux:
+
+- `sudo apt-get update`
+
+- `sudo apt install -y build-essential libssl-dev libffi-dev python3-dev`
+
+- `sudo apt install -y python3-pip`
+
+- `sudo apt-get install python3-venv`
+
+##### Windows:
+
+- Download and install python from [python.org](https://www.python.org/downloads/windows/).
+
+- `pip install virtualenv`
+
 #### Run the code:
 
-- `python -m venv venv`
+- `python3 -m venv venv`
 
 - Linux/MacOS: `source venv/bin/activate`, Windows: `.\venv\Scripts\Activate.ps1`
 
 - `pip install -r requirements.txt`
 
-- `python configs/write_config.py`
+- `python3 configs/write_config.py`
 
 - Enter your secret token into 'configs/config.ini'
 
-- `python bot/main.py`
+- `python3 bot/main.py`
 
 ## Possible Errors and Solutions
 

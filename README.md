@@ -1,3 +1,7 @@
+## Deprecation Notice
+
+:warning: **`bluzelle_bot` is now DEPRECATED. It has been renamed to `discord-bot` and is moved to the [bluzelle/discord-bot](https://github.com/bluzelle/discord-bot).**
+
 # Bluzelle Discord Bot
 
 Discord Bot for gathering data from the Bluzelle Network and publishing it into a discord server.
